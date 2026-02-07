@@ -12,10 +12,14 @@
     "@astrojs/check": "^0.9.6",
     "@astrojs/node": "^9.5.2",
     "@clerk/astro": "^2.16.17",
+    "@supabase/supabase-js": "^2.95.3",
     "astro": "^5.17.1",
+    "mongodb": "^7.1.0",
+    "mongoose": "^9.1.6",
     "typescript": "^5.5.3"
   },
   "devDependencies": {
+    "@types/mongoose": "^5.11.97",
     "prettier": "^3.3.2",
     "prettier-plugin-astro": "^0.14.0"
   },
