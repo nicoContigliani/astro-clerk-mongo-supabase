@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro'
+import { SignedIn, SignedOut } from '@clerk/astro/components'
+---
+
+<Layout title="Dashboard">
+  <SignedOut>
+    <main style="text-align: center; padding: 4rem 1rem;">
+      <h1 style="font-size: 2rem; margin-bottom: 1rem;">Please sign in to view your dashboard</h1>
+      <p style="color: #666; margin-bottom: 2rem;">You need to be signed in to access this page.</p>
+      <a href="/signin" style="padding: 0.8rem 2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+        Sign In
+      </a>
+    </main>
+  </SignedOut>
+
+  <SignedIn>
+    <main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
+      <h1 style="font-size: 2rem; margin-bottom: 2rem;">Your Dashboard</h1>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+          <h3 style="margin-top: 0; color: #666;">Games Played</h3>
+          <p style="font-size: 2.5rem; font-weight: bold; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">0</p>
+        </div>
+        
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+          <h3 style="margin-top: 0; color: #666;">Average Score</h3>
+          <p style="font-size: 2.5rem; font-weight: bold; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">-</p>
+        </div>
+        
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+          <h3 style="margin-top: 0; color: #666;">Total Time</h3>
+          <p style="font-size: 2.5rem; font-weight: bold; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">0m</p>
+        </div>
+      </div>
+      
+      <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+        <h2 style="margin-top: 0;">Recent Activity</h2>
+        <p style="color: #666; text-align: center; padding: 2rem;">No recent activity. Start playing games!</p>
+        <div style="text-align: center; margin-top: 1rem;">
+          <a href="/games" style="padding: 0.8rem 1.5rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+            Play a Game
+          </a>
+        </div>
+      </div>
+    </main>
+  </SignedIn>
+</Layout>

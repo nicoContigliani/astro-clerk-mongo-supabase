@@ -16,10 +16,14 @@
     "astro": "^5.17.1",
     "mongodb": "^7.1.0",
     "mongoose": "^9.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "typescript": "^5.5.3"
   },
   "devDependencies": {
     "@types/mongoose": "^5.11.97",
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
     "prettier": "^3.3.2",
     "prettier-plugin-astro": "^0.14.0"
   },

@@ -1,32 +1,23 @@
-<!-- ---
-import { SignIn } from "@clerk/astro/components";
+---
+import { SignUp } from "@clerk/astro/components";
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Sign In">
-  <SignIn />
-</Layout> -->
-
----
-import { SignIn } from "@clerk/astro/components";
-import Layout from "../layouts/Layout.astro";
----
-
-<Layout title="Sign In">
+<Layout title="Create Account">
   <main style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 200px); padding: 2rem 1rem;">
     <div style="width: 100%; max-width: 420px;">
       <div style="text-align: center; margin-bottom: 2rem;">
         <h1 style="font-size: 2rem; margin-bottom: 0.5rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-          Welcome Back
+          Join Visual Dilemma
         </h1>
         <p style="color: #666; margin: 0;">
-          Sign in to continue your visual dilemma journey
+          Create your account to start playing
         </p>
       </div>
-      <SignIn 
+      <SignUp 
         routing="path"
-        path="/signin"
-        signUpUrl="/signup"
+        path="/signup"
+        signInUrl="/signin"
         redirectUrl="/"
         appearance={{
           variables: {
@@ -82,20 +73,15 @@ import Layout from "../layouts/Layout.astro";
           }
         }}
       />
-      <div style="text-align: center; margin-top: 2rem;">
-        <p style="color: #6b7280; font-size: 0.875rem;">
-          Don't have an account? 
-          <a href="/signup" style="color: #3245ff; font-weight: 600; text-decoration: none; margin-left: 0.25rem;">
-            Sign up
-          </a>
-        </p>
+      <div style="text-align: center; margin-top: 2rem; color: #6b7280; font-size: 0.875rem;">
+        <p>By signing up, you agree to our <a href="/terms" style="color: #3245ff;">Terms</a> and <a href="/privacy" style="color: #3245ff;">Privacy Policy</a></p>
       </div>
     </div>
   </main>
 </Layout>
 
 <style>
-  /* Estilos para los estados hover */
+  /* Estilos para los estados hover (deben ir en un tag style separado) */
   .cl-formButtonPrimary:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(50, 69, 255, 0.3) !important;

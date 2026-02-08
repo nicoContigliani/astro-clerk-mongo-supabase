@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro'
+import { SignedIn, SignedOut } from '@clerk/astro/components'
+---
+
+<Layout title="Games">
+  <SignedOut>
+    <main style="text-align: center; padding: 4rem 1rem;">
+      <h1 style="font-size: 2rem; margin-bottom: 1rem;">Sign in to Play Games</h1>
+      <p style="color: #666; margin-bottom: 2rem;">Create an account to start playing visual dilemma games.</p>
+      <a href="/signup" style="padding: 0.8rem 2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+        Sign Up Free
+      </a>
+    </main>
+  </SignedOut>
+
+  <SignedIn>
+    <main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
+      <h1 style="font-size: 2rem; margin-bottom: 1rem;">Available Games</h1>
+      <p style="color: #666; margin-bottom: 2rem;">Choose a visual dilemma game to play</p>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+        <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); transition: transform 0.3s;">
+          <div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+          <div style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 0.5rem 0;">Ethical Choices</h3>
+            <p style="color: #666; margin-bottom: 1rem;">Test your ethical decision-making with challenging scenarios.</p>
+            <a href="/game/ethical-choices" style="padding: 0.6rem 1.2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              Play Now
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); transition: transform 0.3s;">
+          <div style="height: 200px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+          <div style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 0.5rem 0;">Visual Perception</h3>
+            <p style="color: #666; margin-bottom: 1rem;">Challenge your visual perception and interpretation skills.</p>
+            <a href="/game/visual-perception" style="padding: 0.6rem 1.2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              Play Now
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); transition: transform 0.3s;">
+          <div style="height: 200px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+          <div style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 0.5rem 0;">Quick Decisions</h3>
+            <p style="color: #666; margin-bottom: 1rem;">Make split-second decisions under time pressure.</p>
+            <a href="/game/quick-decisions" style="padding: 0.6rem 1.2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              Play Now
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </SignedIn>
+</Layout>
+
+<style>
+  div[style*="background: white"]:hover {
+    transform: translateY(-8px);
+  }
+</style>

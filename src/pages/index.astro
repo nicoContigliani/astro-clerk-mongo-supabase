@@ -1,7 +1,111 @@
----
+<!-- ---
 import Layout from '../layouts/Layout.astro'
 ---
 
 <Layout title="Clerk + Astro">
   <p>Sign in to try Clerk out!</p>
+</Layout> -->
+
+
+---
+import Layout from '../layouts/Layout.astro'
+import { SignedIn, SignedOut } from '@clerk/astro/components'
+---
+
+<Layout title="Visual Dilemma - Home">
+  <SignedOut>
+    <main style="text-align: center; padding: 3rem 1rem;">
+      <div style="max-width: 600px; margin: 0 auto;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Welcome to Visual Dilemma
+        </h1>
+        <p style="font-size: 1.2rem; color: #666; margin-bottom: 2rem;">
+          Test your intuition and decision-making skills with our visual dilemma games.
+          Sign up to save your progress and compare your choices with others!
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem;">
+          <a href="/signup" style="padding: 0.8rem 2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: transform 0.2s; display: inline-block;">
+            Get Started
+          </a>
+          <a href="/signin" style="padding: 0.8rem 2rem; background: transparent; color: #3245ff; text-decoration: none; border: 2px solid #3245ff; border-radius: 8px; font-weight: bold; transition: all 0.2s; display: inline-block;">
+            Sign In
+          </a>
+        </div>
+        
+        <div style="background: #f8f9fa; border-radius: 12px; padding: 2rem; margin-top: 2rem;">
+          <h3 style="margin-top: 0;">✨ Features</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+            <div style="text-align: center;">
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎮</div>
+              <h4 style="margin: 0.5rem 0;">Interactive Games</h4>
+              <p style="color: #666; font-size: 0.9rem;">Engaging visual decision-making challenges</p>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+              <h4 style="margin: 0.5rem 0;">Track Progress</h4>
+              <p style="color: #666; font-size: 0.9rem;">Save and review your game results</p>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
+              <h4 style="margin: 0.5rem 0;">Compare Choices</h4>
+              <p style="color: #666; font-size: 0.9rem;">See how others decided in the same situations</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </SignedOut>
+
+  <SignedIn>
+    <main style="text-align: center; padding: 3rem 1rem;">
+      <div style="max-width: 600px; margin: 0 auto;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Welcome Back! 👋
+        </h1>
+        <p style="font-size: 1.2rem; color: #666; margin-bottom: 2rem;">
+          Ready to continue your visual dilemma journey?
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+          <a href="/dashboard" style="padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 12px; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s;">
+            <span style="font-size: 2rem; margin-bottom: 1rem;">📊</span>
+            <h3 style="margin: 0 0 0.5rem 0;">Dashboard</h3>
+            <p style="margin: 0; opacity: 0.9;">View your game statistics</p>
+          </a>
+          
+          <a href="/games" style="padding: 1.5rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; text-decoration: none; border-radius: 12px; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s;">
+            <span style="font-size: 2rem; margin-bottom: 1rem;">🎮</span>
+            <h3 style="margin: 0 0 0.5rem 0;">Play Games</h3>
+            <p style="margin: 0; opacity: 0.9;">Start new visual dilemmas</p>
+          </a>
+          
+          <a href="/profile" style="padding: 1.5rem; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; text-decoration: none; border-radius: 12px; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s;">
+            <span style="font-size: 2rem; margin-bottom: 1rem;">👤</span>
+            <h3 style="margin: 0 0 0.5rem 0;">Profile</h3>
+            <p style="margin: 0; opacity: 0.9;">Manage your account</p>
+          </a>
+        </div>
+        
+        <div style="background: #f8f9fa; border-radius: 12px; padding: 2rem; margin-top: 2rem;">
+          <h3 style="margin-top: 0;">Recent Activity</h3>
+          <p style="color: #666;">You haven't played any games yet. Start your first game!</p>
+          <a href="/games" style="display: inline-block; margin-top: 1rem; padding: 0.8rem 1.5rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+            Play Now
+          </a>
+        </div>
+      </div>
+    </main>
+  </SignedIn>
 </Layout>
+
+<style>
+  a:hover {
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

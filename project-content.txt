@@ -1,4 +1,4 @@
-CONTENIDO COMPLETO DEL PROYECTO================================================================================Directorio raíz: /home/nico/Atalaya/desarrollo/Astro/clerkastroGenerado el: 7/2/2026, 17:15:28Nombre: clerk-astro-quickstartDescripción: No especificadaVersión: 0.0.1
+CONTENIDO COMPLETO DEL PROYECTO================================================================================Directorio raíz: /home/nico/Atalaya/desarrollo/Astro/clerkastroGenerado el: 8/2/2026, 17:44:13Nombre: clerk-astro-quickstartDescripción: No especificadaVersión: 0.0.1
 ================================================================================RESUMEN DEL PROYECTO================================================================================
 ================================================================================
 ARCHIVO: .gitignore
@@ -134,6 +134,7 @@ Feel free to create a support thread on our [Discord](https://clerk.com/discord)
 You can discuss ideas, ask questions, and meet others from the community in our [Discord](https://discord.com/invite/b5rXHjAg7A).
 
 If you prefer, you can also find support through our [Twitter](https://twitter.com/ClerkDev), or you can [email](mailto:support@clerk.dev) us!
+# astro-clerk-mongo-supabase
 
 
 ================================================================================
@@ -158,10 +159,14 @@ ARCHIVO: package.json
     "astro": "^5.17.1",
     "mongodb": "^7.1.0",
     "mongoose": "^9.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "typescript": "^5.5.3"
   },
   "devDependencies": {
     "@types/mongoose": "^5.11.97",
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
     "prettier": "^3.3.2",
     "prettier-plugin-astro": "^0.14.0"
   },
@@ -191,7 +196,7 @@ importers:
         version: 9.5.2(astro@5.17.1(@types/node@22.15.17)(rollup@4.40.2)(typescript@5.5.3)(yaml@2.7.1))
       '@clerk/astro':
         specifier: ^2.16.17
-        version: 2.16.17(astro@5.17.1(@types/node@22.15.17)(rollup@4.40.2)(typescript@5.5.3)(yaml@2.7.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 2.16.17(astro@5.17.1(@types/node@22.15.17)(rollup@4.40.2)(typescript@5.5.3)(yaml@2.7.1))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@supabase/supabase-js':
         specifier: ^2.95.3
         version: 2.95.3
@@ -204,6 +209,12 @@ importers:
       mongoose:
         specifier: ^9.1.6
         version: 9.1.6
+      react:
+        specifier: ^19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.2.4
+        version: 19.2.4(react@19.2.4)
       typescript:
         specifier: ^5.5.3
         version: 5.5.3
@@ -211,6 +222,12 @@ importers:
       '@types/mongoose':
         specifier: ^5.11.97
         version: 5.11.97
+      '@types/react':
+        specifier: ^19.2.13
+        version: 19.2.13
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.13)
       prettier:
         specifier: ^3.3.2
         version: 3.3.2
@@ -818,6 +835,14 @@ packages:
   '@types/phoenix@1.6.7':
     resolution: {integrity: sha512-oN9ive//QSBkf19rfDv45M7eZPi0eEXylht2OLEXicu5b4KoQ1OzXIw+xDSGWxSxe1JmepRR/ZH283vsu518/Q==}
 
+  '@types/react-dom@19.2.3':
+    resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
+    peerDependencies:
+      '@types/react': ^19.2.0
+
+  '@types/react@19.2.13':
+    resolution: {integrity: sha512-KkiJeU6VbYbUOp5ITMIc7kBfqlYkKA5KhEHVrGMmUUMt7NeaZg65ojdPk+FtNrBAOXNVM5QM72jnADjM+XVRAQ==}
+
   '@types/unist@3.0.2':
     resolution: {integrity: sha512-dqId9J8K/vGi5Zr7oo212BGii5m3q5Hxlkwy3WpYuKPklmBEvsbMYYyLxAQpSffdLl/gdW0XUpKWFvYmyoWCoQ==}
 
@@ -1031,6 +1056,9 @@ packages:
 
   csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
+
+  csstype@3.2.3:
+    resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -1296,9 +1324,6 @@ packages:
     resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
     engines: {node: '>=14'}
 
-  js-tokens@4.0.0:
-    resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
-
   js-yaml@4.1.1:
     resolution: {integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==}
     hasBin: true
@@ -1329,10 +1354,6 @@ packages:
 
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
-
-  loose-envify@1.4.0:
-    resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
-    hasBin: true
 
   lru-cache@11.2.5:
     resolution: {integrity: sha512-vFrFJkWtJvJnD5hg+hJvVE8Lh/TcMzKnTgCWmtBipwI5yLX/iX+5UB2tfuyODF5E7k9xEzMdYgGqaSb1c0c5Yw==}
@@ -1698,13 +1719,13 @@ packages:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
     engines: {node: '>= 0.6'}
 
-  react-dom@18.3.1:
-    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
+  react-dom@19.2.4:
+    resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
     peerDependencies:
-      react: ^18.3.1
+      react: ^19.2.4
 
-  react@18.3.1:
-    resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
+  react@19.2.4:
+    resolution: {integrity: sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ==}
     engines: {node: '>=0.10.0'}
 
   readdirp@4.0.2:
@@ -1793,8 +1814,8 @@ packages:
     resolution: {integrity: sha512-1n3r/tGXO6b6VXMdFT54SHzT9ytu9yr7TaELowdYpMqY/Ao7EnlQGmAQ1+RatX7Tkkdm6hONI2owqNx2aZj5Sw==}
     engines: {node: '>=11.0.0'}
 
-  scheduler@0.23.2:
-    resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
+  scheduler@0.27.0:
+    resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
 
   semver@7.7.1:
     resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==}
@@ -2425,11 +2446,11 @@ snapshots:
     dependencies:
       fontkitten: 1.0.2
 
-  '@clerk/astro@2.16.17(astro@5.17.1(@types/node@22.15.17)(rollup@4.40.2)(typescript@5.5.3)(yaml@2.7.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/astro@2.16.17(astro@5.17.1(@types/node@22.15.17)(rollup@4.40.2)(typescript@5.5.3)(yaml@2.7.1))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@clerk/backend': 2.29.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@clerk/shared': 3.44.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@clerk/types': 4.101.14(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/backend': 2.29.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@clerk/shared': 3.44.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@clerk/types': 4.101.14(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       astro: 5.17.1(@types/node@22.15.17)(rollup@4.40.2)(typescript@5.5.3)(yaml@2.7.1)
       nanoid: 5.1.6
       nanostores: 1.0.1
@@ -2437,31 +2458,31 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/backend@2.29.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/backend@2.29.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@clerk/shared': 3.44.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@clerk/types': 4.101.14(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/shared': 3.44.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@clerk/types': 4.101.14(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       standardwebhooks: 1.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
       - react
       - react-dom
 
-  '@clerk/shared@3.44.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/shared@3.44.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       csstype: 3.1.3
       dequal: 2.0.3
       glob-to-regexp: 0.4.1
       js-cookie: 3.0.5
       std-env: 3.9.0
-      swr: 2.3.4(react@18.3.1)
+      swr: 2.3.4(react@19.2.4)
     optionalDependencies:
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
 
-  '@clerk/types@4.101.14(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/types@4.101.14(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@clerk/shared': 3.44.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/shared': 3.44.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
     transitivePeerDependencies:
       - react
       - react-dom
@@ -2853,6 +2874,14 @@ snapshots:
 
   '@types/phoenix@1.6.7': {}
 
+  '@types/react-dom@19.2.3(@types/react@19.2.13)':
+    dependencies:
+      '@types/react': 19.2.13
+
+  '@types/react@19.2.13':
+    dependencies:
+      csstype: 3.2.3
+
   '@types/unist@3.0.2': {}
 
   '@types/webidl-conversions@7.0.3': {}
@@ -3158,6 +3187,8 @@ snapshots:
 
   csstype@3.1.3: {}
 
+  csstype@3.2.3: {}
+
   debug@4.4.3:
     dependencies:
       ms: 2.1.3
@@ -3448,8 +3479,6 @@ snapshots:
 
   js-cookie@3.0.5: {}
 
-  js-tokens@4.0.0: {}
-
   js-yaml@4.1.1:
     dependencies:
       argparse: 2.0.1
@@ -3469,10 +3498,6 @@ snapshots:
   lodash@4.17.21: {}
 
   longest-streak@3.1.0: {}
-
-  loose-envify@1.4.0:
-    dependencies:
-      js-tokens: 4.0.0
 
   lru-cache@11.2.5: {}
 
@@ -3965,16 +3990,12 @@ snapshots:
 
   range-parser@1.2.1: {}
 
-  react-dom@18.3.1(react@18.3.1):
+  react-dom@19.2.4(react@19.2.4):
     dependencies:
-      loose-envify: 1.4.0
-      react: 18.3.1
-      scheduler: 0.23.2
-    optional: true
+      react: 19.2.4
+      scheduler: 0.27.0
 
-  react@18.3.1:
-    dependencies:
-      loose-envify: 1.4.0
+  react@19.2.4: {}
 
   readdirp@4.0.2: {}
 
@@ -4123,10 +4144,7 @@ snapshots:
 
   sax@1.4.4: {}
 
-  scheduler@0.23.2:
-    dependencies:
-      loose-envify: 1.4.0
-    optional: true
+  scheduler@0.27.0: {}
 
   semver@7.7.1: {}
 
@@ -4257,11 +4275,11 @@ snapshots:
       picocolors: 1.1.1
       sax: 1.4.4
 
-  swr@2.3.4(react@18.3.1):
+  swr@2.3.4(react@19.2.4):
     dependencies:
       dequal: 2.0.3
-      react: 18.3.1
-      use-sync-external-store: 1.4.0(react@18.3.1)
+      react: 19.2.4
+      use-sync-external-store: 1.4.0(react@19.2.4)
 
   tiny-inflate@1.0.3: {}
 
@@ -4382,9 +4400,9 @@ snapshots:
       ofetch: 1.5.1
       ufo: 1.6.3
 
-  use-sync-external-store@1.4.0(react@18.3.1):
+  use-sync-external-store@1.4.0(react@19.2.4):
     dependencies:
-      react: 18.3.1
+      react: 19.2.4
 
   vfile-location@5.0.2:
     dependencies:
@@ -4677,6 +4695,1054 @@ ARCHIVO: src/assets/background.svg
 
 
 ================================================================================
+ARCHIVO: src/components/TinderSwipe.astro
+================================================================================
+
+---
+// Importar los datos
+import dilemmasData from '../data/dilemmas.json';
+
+// Crear una variable para pasar al script
+const dilemmas = dilemmasData.scenes;
+---
+
+<div id="tinder-app"></div>
+
+<script>
+  // Pasar datos al script inline
+  (function() {
+    // Crear elemento script para almacenar datos
+    const scriptData = document.createElement('script');
+    scriptData.type = 'application/json';
+    scriptData.id = 'tinder-data';
+    
+    // Convertir datos a JSON (sin JSX)
+    const dataString = JSON.stringify(<%= JSON.stringify(dilemmas) %>);
+    scriptData.textContent = dataString;
+    
+    // Insertar antes del script actual
+    const currentScript = document.currentScript;
+    if (currentScript && currentScript.parentNode) {
+      currentScript.parentNode.insertBefore(scriptData, currentScript);
+    }
+  })();
+</script>
+
+<script is:inline>
+  // Obtener datos del elemento script
+  const dataElement = document.getElementById('tinder-data');
+  let dilemmas = [];
+  
+  if (dataElement && dataElement.textContent) {
+    try {
+      dilemmas = JSON.parse(dataElement.textContent);
+    } catch (error) {
+      console.error('Error parsing dilemmas data:', error);
+      // Datos de respaldo si hay error
+      dilemmas = [
+        {
+          scene_id: "1",
+          image_url: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop",
+          title: "Pizza vs Sushi",
+          comment: "Which would you choose for dinner tonight?",
+          options: [
+            { label: "Pizza 🍕", ref_valor: "pizza" },
+            { label: "Sushi 🍣", ref_valor: "sushi" }
+          ]
+        },
+        {
+          scene_id: "2",
+          image_url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop",
+          title: "Beach vs Mountains",
+          comment: "Where would you prefer to spend your vacation?",
+          options: [
+            { label: "Beach 🏖️", ref_valor: "beach" },
+            { label: "Mountains ⛰️", ref_valor: "mountains" }
+          ]
+        }
+      ];
+    }
+  }
+  
+  console.log('Dilemmas loaded:', dilemmas.length);
+  
+  // Estado de la aplicación
+  let currentIndex = 0;
+  let choices = {};
+  let isAnimating = false;
+  let showResults = false;
+  const totalDilemmas = dilemmas.length;
+
+  // Referencias del DOM
+  let appContainer = null;
+
+  // Funciones de utilidad
+  function getProgressPercentage() {
+    return ((currentIndex + 1) / totalDilemmas) * 100;
+  }
+  
+  function handleSwipe(direction) {
+    if (isAnimating || showResults || currentIndex >= totalDilemmas) return;
+    
+    const currentDilemma = dilemmas[currentIndex];
+    if (!currentDilemma) return;
+    
+    const chosenOption = direction === 'left' 
+      ? currentDilemma.options[0].ref_valor 
+      : currentDilemma.options[1].ref_valor;
+    
+    choices[currentDilemma.scene_id] = chosenOption;
+    isAnimating = true;
+    
+    // Animar la tarjeta
+    const card = document.querySelector('.card.current');
+    if (card) {
+      card.classList.add(`swipe-${direction}`);
+    }
+    
+    setTimeout(() => {
+      if (currentIndex < totalDilemmas - 1) {
+        currentIndex++;
+        isAnimating = false;
+        render();
+      } else {
+        showResults = true;
+        renderResults();
+      }
+    }, 300);
+  }
+  
+  function handleReset() {
+    currentIndex = 0;
+    choices = {};
+    showResults = false;
+    render();
+  }
+  
+  function createCardElement(dilemma, position) {
+    const isCurrent = position === 0;
+    const scale = 1 - (position * 0.05);
+    const translateY = position * 20;
+    
+    const card = document.createElement('div');
+    card.className = `card ${isCurrent ? 'current' : ''}`;
+    card.style.cssText = `
+      z-index: ${100 - position};
+      transform: translateY(${translateY}px) scale(${scale});
+      opacity: ${1 - (position * 0.3)};
+    `;
+    
+    // Datos seguros para innerHTML
+    const imageUrl = dilemma.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop';
+    const title = dilemma.title || 'Untitled';
+    const comment = dilemma.comment || '';
+    const optionLeft = dilemma.options && dilemma.options[0] ? dilemma.options[0].label : 'Option A';
+    const optionRight = dilemma.options && dilemma.options[1] ? dilemma.options[1].label : 'Option B';
+    
+    card.innerHTML = `
+      <div class="card-image-container">
+        <img 
+          src="${imageUrl}" 
+          alt="${title}"
+          class="card-image"
+          loading="lazy"
+        />
+        <div class="image-overlay"></div>
+      </div>
+      
+      <div class="card-content">
+        <h2 class="card-title">${title}</h2>
+        <p class="card-comment">${comment}</p>
+        
+        <div class="options-container">
+          <div class="option-left">
+            <div class="option-icon">👈</div>
+            <div class="option-label">${optionLeft}</div>
+          </div>
+          <div class="vs">VS</div>
+          <div class="option-right">
+            <div class="option-icon">👉</div>
+            <div class="option-label">${optionRight}</div>
+          </div>
+        </div>
+      </div>
+      
+      ${isCurrent ? `
+        <div class="swipe-instructions">
+          <div class="swipe-left-instruction">
+            <span class="swipe-arrow">←</span>
+            <span>Swipe Left</span>
+          </div>
+          <div class="swipe-right-instruction">
+            <span>Swipe Right</span>
+            <span class="swipe-arrow">→</span>
+          </div>
+        </div>
+      ` : ''}
+    `;
+    
+    return card;
+  }
+  
+  function createResultsElement() {
+    const container = document.createElement('div');
+    container.className = 'results-container';
+    
+    let resultsHTML = `
+      <h2>Your Choices</h2>
+      <div class="results-grid">
+    `;
+    
+    dilemmas.forEach(dilemma => {
+      const choice = choices[dilemma.scene_id];
+      const chosenLabel = choice === dilemma.options[0].ref_valor 
+        ? dilemma.options[0].label 
+        : dilemma.options[1].label;
+      
+      const imageUrl = dilemma.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop';
+      const title = dilemma.title || 'Untitled';
+      const comment = dilemma.comment || '';
+      
+      resultsHTML += `
+        <div class="result-card">
+          <img 
+            src="${imageUrl}" 
+            alt="${title}"
+            class="result-image"
+          />
+          <div class="result-content">
+            <h3>${title}</h3>
+            <p>${comment}</p>
+            <div class="result-choice">
+              <span class="choice-label">You chose:</span>
+              <span class="choice-value">${chosenLabel}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    
+    resultsHTML += `
+      </div>
+      <button class="reset-button">Play Again</button>
+    `;
+    
+    container.innerHTML = resultsHTML;
+    
+    // Bind reset button
+    const resetBtn = container.querySelector('.reset-button');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', handleReset);
+    }
+    
+    return container;
+  }
+  
+  function render() {
+    appContainer = document.getElementById('tinder-app');
+    if (!appContainer) {
+      console.error('Container #tinder-app not found');
+      return;
+    }
+    
+    // Limpiar solo si tenemos datos
+    if (dilemmas.length === 0) {
+      appContainer.innerHTML = `
+        <div style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          text-align: center;
+          padding: 2rem;
+        ">
+          <div>
+            <h1 style="margin-bottom: 1rem;">No Game Data</h1>
+            <p>Unable to load dilemmas. Please check the data file.</p>
+            <button onclick="window.location.reload()" style="
+              margin-top: 1rem;
+              padding: 0.75rem 1.5rem;
+              background: white;
+              color: #667eea;
+              border: none;
+              border-radius: 8px;
+              font-weight: bold;
+              cursor: pointer;
+            ">
+              Try Again
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    appContainer.innerHTML = '';
+    
+    const container = document.createElement('div');
+    container.className = 'tinder-container';
+    
+    // Header
+    container.innerHTML = `
+      <div class="tinder-header">
+        <h1>Decision Tinder</h1>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: ${getProgressPercentage()}%"></div>
+          <span class="progress-text">
+            ${currentIndex + 1} / ${totalDilemmas}
+          </span>
+        </div>
+      </div>
+      
+      <div class="cards-container"></div>
+      
+      <div class="action-buttons">
+        <button class="action-button reject-button" ${isAnimating ? 'disabled' : ''}>
+          <span class="button-icon">👈</span>
+          <span class="button-text">Choose Left</span>
+        </button>
+        <button class="action-button accept-button" ${isAnimating ? 'disabled' : ''}>
+          <span class="button-text">Choose Right</span>
+          <span class="button-icon">👉</span>
+        </button>
+      </div>
+      
+      <button class="skip-button" ${isAnimating ? 'disabled' : ''}>
+        Skip (Random Choice)
+      </button>
+    `;
+    
+    // Cards
+    const cardsContainer = container.querySelector('.cards-container');
+    if (cardsContainer) {
+      const visibleCards = dilemmas.slice(currentIndex, Math.min(currentIndex + 3, totalDilemmas));
+      
+      visibleCards.forEach((dilemma, index) => {
+        const card = createCardElement(dilemma, index);
+        cardsContainer.appendChild(card);
+      });
+    }
+    
+    appContainer.appendChild(container);
+    bindEvents();
+  }
+  
+  function renderResults() {
+    appContainer = document.getElementById('tinder-app');
+    if (!appContainer) return;
+    
+    appContainer.innerHTML = '';
+    const results = createResultsElement();
+    appContainer.appendChild(results);
+  }
+  
+  function bindEvents() {
+    // Botón izquierdo
+    const rejectBtn = document.querySelector('.reject-button');
+    if (rejectBtn) {
+      rejectBtn.addEventListener('click', () => handleSwipe('left'));
+    }
+    
+    // Botón derecho
+    const acceptBtn = document.querySelector('.accept-button');
+    if (acceptBtn) {
+      acceptBtn.addEventListener('click', () => handleSwipe('right'));
+    }
+    
+    // Botón skip
+    const skipBtn = document.querySelector('.skip-button');
+    if (skipBtn) {
+      skipBtn.addEventListener('click', () => {
+        const randomDirection = Math.random() > 0.5 ? 'left' : 'right';
+        handleSwipe(randomDirection);
+      });
+    }
+    
+    // Swipe táctil para móviles
+    setupTouchEvents();
+  }
+  
+  function setupTouchEvents() {
+    let startX = 0;
+    let startY = 0;
+    let isSwiping = false;
+    
+    const card = document.querySelector('.card.current');
+    if (!card) return;
+    
+    card.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      isSwiping = true;
+    });
+    
+    card.addEventListener('touchmove', (e) => {
+      if (!isSwiping) return;
+      e.preventDefault();
+    });
+    
+    card.addEventListener('touchend', (e) => {
+      if (!isSwiping) return;
+      
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      
+      const diffX = endX - startX;
+      const diffY = endY - startY;
+      
+      // Si el movimiento horizontal es significativo y vertical no lo es
+      if (Math.abs(diffX) > 50 && Math.abs(diffY) < 100) {
+        const direction = diffX < 0 ? 'left' : 'right';
+        handleSwipe(direction);
+      }
+      
+      isSwiping = false;
+    });
+    
+    // También soporte para mouse en desktop
+    let mouseStartX = 0;
+    let mouseIsDown = false;
+    
+    card.addEventListener('mousedown', (e) => {
+      mouseStartX = e.clientX;
+      mouseIsDown = true;
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+      if (!mouseIsDown) return;
+      
+      const mouseEndX = e.clientX;
+      const diffX = mouseEndX - mouseStartX;
+      
+      // Dar feedback visual mientras se arrastra
+      if (Math.abs(diffX) > 30) {
+        const rotate = diffX * 0.1;
+        card.style.transform = `translateY(0px) scale(1) rotate(${rotate}deg)`;
+      }
+    });
+    
+    document.addEventListener('mouseup', (e) => {
+      if (!mouseIsDown) return;
+      
+      const mouseEndX = e.clientX;
+      const diffX = mouseEndX - mouseStartX;
+      
+      if (Math.abs(diffX) > 100) {
+        const direction = diffX < 0 ? 'left' : 'right';
+        handleSwipe(direction);
+      } else {
+        // Resetear la transformación si no se hizo swipe
+        card.style.transform = 'translateY(0px) scale(1) rotate(0deg)';
+      }
+      
+      mouseIsDown = false;
+    });
+  }
+  
+  // Inicializar cuando el DOM esté listo
+  function init() {
+    if (dilemmas.length > 0) {
+      render();
+    } else {
+      console.error('No dilemmas data available');
+      const appContainer = document.getElementById('tinder-app');
+      if (appContainer) {
+        appContainer.innerHTML = `
+          <div style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+          ">
+            <div>
+              <h1 style="margin-bottom: 1rem;">⚠️ Game Data Error</h1>
+              <p>Using demo data instead...</p>
+              <div style="margin-top: 2rem; width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            </div>
+          </div>
+        `;
+        // Recargar después de 2 segundos
+        setTimeout(() => {
+          render();
+        }, 2000);
+      }
+    }
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    // DOM already loaded
+    init();
+  }
+</script>
+
+<style>
+  /* Animación de carga */
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Estilos optimizados para el componente Tinder */
+  :root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --reject-gradient: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+    --accept-gradient: linear-gradient(135deg, #4ecdc4 0%, #00b894 100%);
+    --progress-gradient: linear-gradient(90deg, #00ff88 0%, #00ccff 100%);
+    --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.2);
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  #tinder-app {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .tinder-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--primary-gradient);
+    position: relative;
+  }
+
+  .tinder-header {
+    padding: 1.5rem;
+    text-align: center;
+    color: white;
+    position: relative;
+    z-index: 100;
+    flex-shrink: 0;
+  }
+
+  .tinder-header h1 {
+    margin: 0 0 1rem;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  .progress-container {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.2);
+    height: 6px;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--progress-gradient);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    position: absolute;
+    top: -25px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+  }
+
+  .cards-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 1rem;
+    min-height: 0;
+  }
+
+  .card {
+    position: absolute;
+    width: calc(100% - 2rem);
+    max-width: 400px;
+    height: min(500px, 70vh);
+    background: white;
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: grab;
+    user-select: none;
+    touch-action: pan-y;
+  }
+
+  .card:active {
+    cursor: grabbing;
+  }
+
+  .swipe-left {
+    transform: translateX(-150%) rotate(-30deg) !important;
+    opacity: 0 !important;
+  }
+
+  .swipe-right {
+    transform: translateX(150%) rotate(30deg) !important;
+    opacity: 0 !important;
+  }
+
+  .card-image-container {
+    width: 100%;
+    height: 60%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover .card-image {
+    transform: scale(1.05);
+  }
+
+  .image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  }
+
+  .card-content {
+    padding: 1.5rem;
+    height: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .card-comment {
+    margin: 0 0 1rem;
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .options-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: auto;
+  }
+
+  .option-left, .option-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+
+  .option-left {
+    background: var(--reject-gradient);
+    color: white;
+  }
+
+  .option-right {
+    background: var(--accept-gradient);
+    color: white;
+  }
+
+  .option-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .option-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .vs {
+    font-weight: bold;
+    color: #888;
+    padding: 0 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .swipe-instructions {
+    position: absolute;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.875rem;
+  }
+
+  .swipe-left-instruction, .swipe-right-instruction {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+  }
+
+  .swipe-arrow {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    padding: 1rem;
+    position: relative;
+    z-index: 100;
+    flex-shrink: 0;
+  }
+
+  .action-button {
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    min-width: 140px;
+    justify-content: center;
+  }
+
+  .action-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .action-button:not(:disabled):hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .action-button:not(:disabled):active {
+    transform: translateY(-1px);
+  }
+
+  .reject-button {
+    background: var(--reject-gradient);
+    color: white;
+  }
+
+  .accept-button {
+    background: var(--accept-gradient);
+    color: white;
+  }
+
+  .button-icon {
+    font-size: 1.25rem;
+  }
+
+  .button-text {
+    font-size: 0.875rem;
+  }
+
+  .skip-button {
+    margin: 0 auto 1rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 25px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
+  }
+
+  .skip-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .skip-button:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Results Styles */
+  .results-container {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 1rem;
+    text-align: center;
+    background: var(--primary-gradient);
+  }
+
+  .results-container h2 {
+    color: white;
+    margin: 0 0 1.5rem;
+    font-size: 2rem;
+    padding-top: 1rem;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 0 0.5rem;
+  }
+
+  .result-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.3s ease;
+  }
+
+  .result-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .result-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+  }
+
+  .result-content {
+    padding: 1rem;
+  }
+
+  .result-content h3 {
+    margin: 0 0 0.5rem;
+    color: #333;
+    font-size: 1.25rem;
+  }
+
+  .result-content p {
+    margin: 0 0 1rem;
+    color: #666;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .result-choice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  .choice-label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.875rem;
+  }
+
+  .choice-value {
+    color: #667eea;
+    font-weight: bold;
+    font-size: 0.875rem;
+  }
+
+  .reset-button {
+    padding: 1rem 2.5rem;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    margin-bottom: 2rem;
+  }
+
+  .reset-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { 
+      opacity: 0; 
+      transform: translateY(20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+
+  .card {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .tinder-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card {
+      height: min(450px, 65vh);
+      width: calc(100% - 1rem);
+    }
+
+    .card-content {
+      padding: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+    }
+
+    .card-comment {
+      font-size: 0.875rem;
+    }
+
+    .action-button {
+      padding: 0.75rem 1rem;
+      min-width: 120px;
+      font-size: 0.875rem;
+    }
+
+    .button-icon {
+      font-size: 1rem;
+    }
+
+    .button-text {
+      font-size: 0.75rem;
+    }
+
+    .skip-button {
+      padding: 0.625rem 1.25rem;
+      font-size: 0.875rem;
+    }
+
+    .results-container h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .tinder-header {
+      padding: 1rem;
+    }
+
+    .tinder-header h1 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .card {
+      height: min(400px, 60vh);
+      border-radius: 20px;
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+    }
+
+    .options-container {
+      gap: 0.5rem;
+    }
+
+    .option-left, .option-right {
+      padding: 0.5rem;
+    }
+
+    .option-icon {
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .option-label {
+      font-size: 0.75rem;
+    }
+
+    .vs {
+      font-size: 0.625rem;
+    }
+
+    .action-buttons {
+      gap: 0.5rem;
+      padding: 0.75rem;
+    }
+
+    .action-button {
+      min-width: 110px;
+      padding: 0.625rem 0.875rem;
+    }
+
+    .button-text {
+      display: none;
+    }
+
+    .button-icon {
+      font-size: 1.5rem;
+    }
+
+    .swipe-instructions {
+      display: none;
+    }
+
+    .results-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .result-image {
+      height: 120px;
+    }
+
+    .reset-button {
+      padding: 0.875rem 2rem;
+      font-size: 0.875rem;
+    }
+  }
+</style>
+
+================================================================================
 ARCHIVO: src/components/Welcome.astro
 ================================================================================
 
@@ -4893,6 +5959,178 @@ import background from '../assets/background.svg';
 
 
 ================================================================================
+ARCHIVO: src/data/dilemmas.json
+================================================================================
+
+{
+  "version": "1.0",
+  "title": "Decision Tinder",
+  "description": "Swipe left or right based on your preferences",
+  "scenes": [
+    {
+      "scene_id": "1",
+      "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop",
+      "title": "Pizza vs Sushi",
+      "comment": "Which would you choose for dinner tonight?",
+      "options": [
+        {
+          "label": "Pizza 🍕",
+          "ref_valor": "pizza"
+        },
+        {
+          "label": "Sushi 🍣",
+          "ref_valor": "sushi"
+        }
+      ]
+    },
+    {
+      "scene_id": "2",
+      "image_url": "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop",
+      "title": "Beach vs Mountains",
+      "comment": "Where would you prefer to spend your vacation?",
+      "options": [
+        {
+          "label": "Beach 🏖️",
+          "ref_valor": "beach"
+        },
+        {
+          "label": "Mountains ⛰️",
+          "ref_valor": "mountains"
+        }
+      ]
+    },
+    {
+      "scene_id": "3",
+      "image_url": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop",
+      "title": "Movie Night",
+      "comment": "What type of movie would you watch?",
+      "options": [
+        {
+          "label": "Action 🎬",
+          "ref_valor": "action"
+        },
+        {
+          "label": "Romance 💖",
+          "ref_valor": "romance"
+        }
+      ]
+    },
+    {
+      "scene_id": "4",
+      "image_url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop",
+      "title": "Coffee Shop",
+      "comment": "Which drink would you order?",
+      "options": [
+        {
+          "label": "Coffee ☕",
+          "ref_valor": "coffee"
+        },
+        {
+          "label": "Tea 🍵",
+          "ref_valor": "tea"
+        }
+      ]
+    },
+    {
+      "scene_id": "5",
+      "image_url": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+      "title": "Work Style",
+      "comment": "How do you prefer to work?",
+      "options": [
+        {
+          "label": "Office 🏢",
+          "ref_valor": "office"
+        },
+        {
+          "label": "Remote 🏠",
+          "ref_valor": "remote"
+        }
+      ]
+    },
+    {
+      "scene_id": "6",
+      "image_url": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop",
+      "title": "Music Genre",
+      "comment": "What music are you in the mood for?",
+      "options": [
+        {
+          "label": "Pop 🎵",
+          "ref_valor": "pop"
+        },
+        {
+          "label": "Rock 🤘",
+          "ref_valor": "rock"
+        }
+      ]
+    },
+    {
+      "scene_id": "7",
+      "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
+      "title": "Pet Choice",
+      "comment": "If you could have any pet, which would it be?",
+      "options": [
+        {
+          "label": "Dog 🐕",
+          "ref_valor": "dog"
+        },
+        {
+          "label": "Cat 🐈",
+          "ref_valor": "cat"
+        }
+      ]
+    },
+    {
+      "scene_id": "8",
+      "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=600&fit=crop",
+      "title": "Sport Preference",
+      "comment": "Which sport would you rather play?",
+      "options": [
+        {
+          "label": "Soccer ⚽",
+          "ref_valor": "soccer"
+        },
+        {
+          "label": "Basketball 🏀",
+          "ref_valor": "basketball"
+        }
+      ]
+    },
+    {
+      "scene_id": "9",
+      "image_url": "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop",
+      "title": "Reading Material",
+      "comment": "What would you rather read?",
+      "options": [
+        {
+          "label": "Fiction 📚",
+          "ref_valor": "fiction"
+        },
+        {
+          "label": "Non-Fiction 📖",
+          "ref_valor": "nonfiction"
+        }
+      ]
+    },
+    {
+      "scene_id": "10",
+      "image_url": "https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=800&h=600&fit=crop",
+      "title": "Season Preference",
+      "comment": "Which season do you enjoy more?",
+      "options": [
+        {
+          "label": "Summer ☀️",
+          "ref_valor": "summer"
+        },
+        {
+          "label": "Winter ❄️",
+          "ref_valor": "winter"
+        }
+      ]
+    }
+  ]
+}
+
+================================================================================
 ARCHIVO: src/env.d.ts
 ================================================================================
 
@@ -4905,6 +6143,12 @@ ARCHIVO: src/layouts/Layout.astro
 ================================================================================
 
 ---
+import { SignedIn, SignedOut, UserButton, SignInButton, SignUpButton } from '@clerk/astro/components'
+
+const { title } = Astro.props
+---
+
+<!-- ---
 import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/astro/components'
 
 const { title } = Astro.props
@@ -4942,7 +6186,275 @@ const { title } = Astro.props
 		width: 100%;
 		height: 100%;
 	}
-</style>
+</style> --><!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} | Visual Dilemma</title>
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
+        --primary-color: #3245ff;
+        --secondary-color: #bc52ee;
+        --text-dark: #111827;
+        --text-light: #6b7280;
+        --bg-light: #f8f9fa;
+        --border-color: #e5e7eb;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: var(--text-dark);
+        background-color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <header
+      style="
+			background: white;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+			position: sticky;
+			top: 0;
+			z-index: 1000;
+			padding: 1rem 2rem;
+		"
+    >
+      <div
+        style="
+				max-width: 1200px;
+				margin: 0 auto;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 2rem;
+			"
+      >
+        <div style="display: flex; align-items: center; gap: 2rem;">
+          <a
+            href="/"
+            style="
+						text-decoration: none;
+						font-size: 1.5rem;
+						font-weight: bold;
+						background: var(--primary-gradient);
+						-webkit-background-clip: text;
+						-webkit-text-fill-color: transparent;
+						background-clip: text;
+					"
+          >
+            Visual Dilemma
+          </a>
+          <nav style="display: flex; gap: 1.5rem; align-items: center;">
+            <a
+              href="/"
+              style="
+							text-decoration: none;
+							color: var(--text-light);
+							font-weight: 500;
+							transition: color 0.2s;
+						"
+              onmouseover="this.style.color='var(--primary-color)'"
+              onmouseout="this.style.color='var(--text-light)'"
+            >
+              Home
+            </a>
+            <SignedIn>
+              <a
+                href="/games"
+                style="
+								text-decoration: none;
+								color: var(--text-light);
+								font-weight: 500;
+								transition: color 0.2s;
+							"
+                onmouseover="this.style.color='var(--primary-color)'"
+                onmouseout="this.style.color='var(--text-light)'"
+              >
+                Games
+              </a>
+              <a
+                href="/dashboard"
+                style="
+								text-decoration: none;
+								color: var(--text-light);
+								font-weight: 500;
+								transition: color 0.2s;
+							"
+                onmouseover="this.style.color='var(--primary-color)'"
+                onmouseout="this.style.color='var(--text-light)'"
+              >
+                Dashboard
+              </a>
+              <a
+                href="/tinder"
+                style="
+  					text-decoration: none;
+  					color: var(--text-light);
+  					font-weight: 500;
+  					transition: color 0.2s;
+				"
+                onmouseover="this.style.color='var(--primary-color)'"
+                onmouseout="this.style.color='var(--text-light)'"
+              >
+                Decision Tinder
+              </a>
+            </SignedIn>
+            <a
+              href="/about"
+              style="
+							text-decoration: none;
+							color: var(--text-light);
+							font-weight: 500;
+							transition: color 0.2s;
+						"
+              onmouseover="this.style.color='var(--primary-color)'"
+              onmouseout="this.style.color='var(--text-light)'"
+            >
+              About
+            </a>
+          </nav>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button
+                style="
+								padding: 0.5rem 1.5rem;
+								background: transparent;
+								color: var(--primary-color);
+								border: 2px solid var(--primary-color);
+								border-radius: 8px;
+								font-weight: 600;
+								cursor: pointer;
+								transition: all 0.2s;
+							"
+                onmouseover="this.style.backgroundColor='var(--primary-color)'; this.style.color='white'"
+                onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--primary-color)'"
+              >
+                Sign In
+              </button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <button
+                style="
+								padding: 0.5rem 1.5rem;
+								background: var(--primary-gradient);
+								color: white;
+								border: none;
+								border-radius: 8px;
+								font-weight: 600;
+								cursor: pointer;
+								transition: transform 0.2s;
+							"
+                onmouseover="this.style.transform='translateY(-2px)'"
+                onmouseout="this.style.transform='none'"
+              >
+                Sign Up
+              </button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: {
+                    width: '40px',
+                    height: '40px',
+                    border: '2px solid var(--border-color)',
+                  },
+                },
+              }}
+            />
+          </SignedIn>
+        </div>
+      </div>
+    </header>
+
+    <main style="min-height: calc(100vh - 200px);">
+      <slot />
+    </main>
+
+    <footer
+      style="
+			background: var(--bg-light);
+			padding: 3rem 2rem 2rem;
+			margin-top: 4rem;
+			border-top: 1px solid var(--border-color);
+		"
+    >
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <div
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;"
+        >
+          <div>
+            <h3 style="margin-bottom: 1rem; color: var(--text-dark);">Visual Dilemma</h3>
+            <p style="color: var(--text-light); line-height: 1.6;">
+              Test your intuition and decision-making skills with our engaging visual dilemma games.
+            </p>
+          </div>
+          <div>
+            <h4 style="margin-bottom: 1rem; color: var(--text-dark);">Quick Links</h4>
+            <ul style="list-style: none; padding: 0;">
+              <li>
+                <a href="/games" style="color: var(--text-light); text-decoration: none; line-height: 2;">Games</a>
+              </li>
+              <li>
+                <a href="/dashboard" style="color: var(--text-light); text-decoration: none; line-height: 2;"
+                  >Dashboard</a>
+              </li>
+              <li>
+                <a href="/about" style="color: var(--text-light); text-decoration: none; line-height: 2;">About</a>
+              </li>
+              <li>
+                <a href="/contact" style="color: var(--text-light); text-decoration: none; line-height: 2;">Contact</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="margin-bottom: 1rem; color: var(--text-dark);">Legal</h4>
+            <ul style="list-style: none; padding: 0;">
+              <li>
+                <a href="/privacy" style="color: var(--text-light); text-decoration: none; line-height: 2;"
+                  >Privacy Policy</a>
+              </li>
+              <li>
+                <a href="/terms" style="color: var(--text-light); text-decoration: none; line-height: 2;"
+                  >Terms of Service</a>
+              </li>
+              <li>
+                <a href="/cookies" style="color: var(--text-light); text-decoration: none; line-height: 2;"
+                  >Cookie Policy</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
+          style="
+					border-top: 1px solid var(--border-color);
+					padding-top: 2rem;
+					text-align: center;
+					color: var(--text-light);
+					font-size: 0.875rem;
+				"
+        >
+          <p>© 2024 Visual Dilemma. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
 
 
 ================================================================================
@@ -5195,21 +6707,256 @@ export const onRequest = clerkMiddleware()
 
 
 ================================================================================
-ARCHIVO: src/pages/index.astro
+ARCHIVO: src/pages/dashboard.astro
 ================================================================================
 
 ---
+import Layout from '../layouts/Layout.astro'
+import { SignedIn, SignedOut } from '@clerk/astro/components'
+---
+
+<Layout title="Dashboard">
+  <SignedOut>
+    <main style="text-align: center; padding: 4rem 1rem;">
+      <h1 style="font-size: 2rem; margin-bottom: 1rem;">Please sign in to view your dashboard</h1>
+      <p style="color: #666; margin-bottom: 2rem;">You need to be signed in to access this page.</p>
+      <a href="/signin" style="padding: 0.8rem 2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+        Sign In
+      </a>
+    </main>
+  </SignedOut>
+
+  <SignedIn>
+    <main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
+      <h1 style="font-size: 2rem; margin-bottom: 2rem;">Your Dashboard</h1>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+          <h3 style="margin-top: 0; color: #666;">Games Played</h3>
+          <p style="font-size: 2.5rem; font-weight: bold; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">0</p>
+        </div>
+        
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+          <h3 style="margin-top: 0; color: #666;">Average Score</h3>
+          <p style="font-size: 2.5rem; font-weight: bold; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">-</p>
+        </div>
+        
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+          <h3 style="margin-top: 0; color: #666;">Total Time</h3>
+          <p style="font-size: 2.5rem; font-weight: bold; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">0m</p>
+        </div>
+      </div>
+      
+      <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+        <h2 style="margin-top: 0;">Recent Activity</h2>
+        <p style="color: #666; text-align: center; padding: 2rem;">No recent activity. Start playing games!</p>
+        <div style="text-align: center; margin-top: 1rem;">
+          <a href="/games" style="padding: 0.8rem 1.5rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+            Play a Game
+          </a>
+        </div>
+      </div>
+    </main>
+  </SignedIn>
+</Layout>
+
+================================================================================
+ARCHIVO: src/pages/games.astro
+================================================================================
+
+---
+import Layout from '../layouts/Layout.astro'
+import { SignedIn, SignedOut } from '@clerk/astro/components'
+---
+
+<Layout title="Games">
+  <SignedOut>
+    <main style="text-align: center; padding: 4rem 1rem;">
+      <h1 style="font-size: 2rem; margin-bottom: 1rem;">Sign in to Play Games</h1>
+      <p style="color: #666; margin-bottom: 2rem;">Create an account to start playing visual dilemma games.</p>
+      <a href="/signup" style="padding: 0.8rem 2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+        Sign Up Free
+      </a>
+    </main>
+  </SignedOut>
+
+  <SignedIn>
+    <main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
+      <h1 style="font-size: 2rem; margin-bottom: 1rem;">Available Games</h1>
+      <p style="color: #666; margin-bottom: 2rem;">Choose a visual dilemma game to play</p>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+        <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); transition: transform 0.3s;">
+          <div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+          <div style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 0.5rem 0;">Ethical Choices</h3>
+            <p style="color: #666; margin-bottom: 1rem;">Test your ethical decision-making with challenging scenarios.</p>
+            <a href="/game/ethical-choices" style="padding: 0.6rem 1.2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              Play Now
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); transition: transform 0.3s;">
+          <div style="height: 200px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+          <div style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 0.5rem 0;">Visual Perception</h3>
+            <p style="color: #666; margin-bottom: 1rem;">Challenge your visual perception and interpretation skills.</p>
+            <a href="/game/visual-perception" style="padding: 0.6rem 1.2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              Play Now
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); transition: transform 0.3s;">
+          <div style="height: 200px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+          <div style="padding: 1.5rem;">
+            <h3 style="margin: 0 0 0.5rem 0;">Quick Decisions</h3>
+            <p style="color: #666; margin-bottom: 1rem;">Make split-second decisions under time pressure.</p>
+            <a href="/game/quick-decisions" style="padding: 0.6rem 1.2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              Play Now
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </SignedIn>
+</Layout>
+
+<style>
+  div[style*="background: white"]:hover {
+    transform: translateY(-8px);
+  }
+</style>
+
+================================================================================
+ARCHIVO: src/pages/index.astro
+================================================================================
+
+<!-- ---
 import Layout from '../layouts/Layout.astro'
 ---
 
 <Layout title="Clerk + Astro">
   <p>Sign in to try Clerk out!</p>
+</Layout> -->
+
+
+---
+import Layout from '../layouts/Layout.astro'
+import { SignedIn, SignedOut } from '@clerk/astro/components'
+---
+
+<Layout title="Visual Dilemma - Home">
+  <SignedOut>
+    <main style="text-align: center; padding: 3rem 1rem;">
+      <div style="max-width: 600px; margin: 0 auto;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Welcome to Visual Dilemma
+        </h1>
+        <p style="font-size: 1.2rem; color: #666; margin-bottom: 2rem;">
+          Test your intuition and decision-making skills with our visual dilemma games.
+          Sign up to save your progress and compare your choices with others!
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem;">
+          <a href="/signup" style="padding: 0.8rem 2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: transform 0.2s; display: inline-block;">
+            Get Started
+          </a>
+          <a href="/signin" style="padding: 0.8rem 2rem; background: transparent; color: #3245ff; text-decoration: none; border: 2px solid #3245ff; border-radius: 8px; font-weight: bold; transition: all 0.2s; display: inline-block;">
+            Sign In
+          </a>
+        </div>
+        
+        <div style="background: #f8f9fa; border-radius: 12px; padding: 2rem; margin-top: 2rem;">
+          <h3 style="margin-top: 0;">✨ Features</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+            <div style="text-align: center;">
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎮</div>
+              <h4 style="margin: 0.5rem 0;">Interactive Games</h4>
+              <p style="color: #666; font-size: 0.9rem;">Engaging visual decision-making challenges</p>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+              <h4 style="margin: 0.5rem 0;">Track Progress</h4>
+              <p style="color: #666; font-size: 0.9rem;">Save and review your game results</p>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
+              <h4 style="margin: 0.5rem 0;">Compare Choices</h4>
+              <p style="color: #666; font-size: 0.9rem;">See how others decided in the same situations</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </SignedOut>
+
+  <SignedIn>
+    <main style="text-align: center; padding: 3rem 1rem;">
+      <div style="max-width: 600px; margin: 0 auto;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Welcome Back! 👋
+        </h1>
+        <p style="font-size: 1.2rem; color: #666; margin-bottom: 2rem;">
+          Ready to continue your visual dilemma journey?
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+          <a href="/dashboard" style="padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 12px; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s;">
+            <span style="font-size: 2rem; margin-bottom: 1rem;">📊</span>
+            <h3 style="margin: 0 0 0.5rem 0;">Dashboard</h3>
+            <p style="margin: 0; opacity: 0.9;">View your game statistics</p>
+          </a>
+          
+          <a href="/games" style="padding: 1.5rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; text-decoration: none; border-radius: 12px; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s;">
+            <span style="font-size: 2rem; margin-bottom: 1rem;">🎮</span>
+            <h3 style="margin: 0 0 0.5rem 0;">Play Games</h3>
+            <p style="margin: 0; opacity: 0.9;">Start new visual dilemmas</p>
+          </a>
+          
+          <a href="/profile" style="padding: 1.5rem; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; text-decoration: none; border-radius: 12px; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s;">
+            <span style="font-size: 2rem; margin-bottom: 1rem;">👤</span>
+            <h3 style="margin: 0 0 0.5rem 0;">Profile</h3>
+            <p style="margin: 0; opacity: 0.9;">Manage your account</p>
+          </a>
+        </div>
+        
+        <div style="background: #f8f9fa; border-radius: 12px; padding: 2rem; margin-top: 2rem;">
+          <h3 style="margin-top: 0;">Recent Activity</h3>
+          <p style="color: #666;">You haven't played any games yet. Start your first game!</p>
+          <a href="/games" style="display: inline-block; margin-top: 1rem; padding: 0.8rem 1.5rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+            Play Now
+          </a>
+        </div>
+      </div>
+    </main>
+  </SignedIn>
 </Layout>
 
+<style>
+  a:hover {
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
 
 ================================================================================
 ARCHIVO: src/pages/signin.astro
 ================================================================================
+
+<!-- ---
+import { SignIn } from "@clerk/astro/components";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Sign In">
+  <SignIn />
+</Layout> -->
 
 ---
 import { SignIn } from "@clerk/astro/components";
@@ -5217,9 +6964,268 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Sign In">
-  <SignIn />
+  <main style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 200px); padding: 2rem 1rem;">
+    <div style="width: 100%; max-width: 420px;">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="font-size: 2rem; margin-bottom: 0.5rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Welcome Back
+        </h1>
+        <p style="color: #666; margin: 0;">
+          Sign in to continue your visual dilemma journey
+        </p>
+      </div>
+      <SignIn 
+        routing="path"
+        path="/signin"
+        signUpUrl="/signup"
+        redirectUrl="/"
+        appearance={{
+          variables: {
+            colorPrimary: '#3245ff',
+            colorText: '#111827',
+            colorTextSecondary: '#6b7280',
+            colorBackground: '#ffffff',
+            colorInputBackground: '#ffffff',
+            colorInputText: '#111827',
+          },
+          elements: {
+            rootBox: {
+              width: '100%',
+              margin: '0 auto'
+            },
+            card: {
+              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+              borderRadius: '16px',
+              border: '1px solid #e5e7eb',
+              width: '100%'
+            },
+            headerTitle: {
+              fontSize: '1.5rem',
+              fontWeight: 'bold'
+            },
+            headerSubtitle: {
+              fontSize: '0.875rem'
+            },
+            formButtonPrimary: {
+              background: 'linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%)',
+              borderRadius: '8px',
+              padding: '0.75rem 1.5rem',
+              fontSize: '1rem',
+              fontWeight: '600'
+            },
+            formFieldInput: {
+              borderRadius: '8px',
+              padding: '0.75rem'
+            },
+            footerActionLink: {
+              fontWeight: '600'
+            },
+            socialButtonsBlockButton: {
+              borderRadius: '8px',
+              border: '1px solid #e5e7eb'
+            },
+            dividerLine: {
+              background: '#e5e7eb'
+            },
+            dividerText: {
+              fontSize: '0.875rem'
+            }
+          }
+        }}
+      />
+      <div style="text-align: center; margin-top: 2rem;">
+        <p style="color: #6b7280; font-size: 0.875rem;">
+          Don't have an account? 
+          <a href="/signup" style="color: #3245ff; font-weight: 600; text-decoration: none; margin-left: 0.25rem;">
+            Sign up
+          </a>
+        </p>
+      </div>
+    </div>
+  </main>
 </Layout>
 
+<style>
+  /* Estilos para los estados hover */
+  .cl-formButtonPrimary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(50, 69, 255, 0.3) !important;
+  }
+  
+  .cl-footerActionLink:hover {
+    text-decoration: underline !important;
+  }
+  
+  .cl-socialButtonsBlockButton:hover {
+    border-color: #3245ff !important;
+    transform: translateY(-2px);
+  }
+</style>
+
+
+================================================================================
+ARCHIVO: src/pages/signup.astro
+================================================================================
+
+---
+import { SignUp } from "@clerk/astro/components";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Create Account">
+  <main style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 200px); padding: 2rem 1rem;">
+    <div style="width: 100%; max-width: 420px;">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="font-size: 2rem; margin-bottom: 0.5rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Join Visual Dilemma
+        </h1>
+        <p style="color: #666; margin: 0;">
+          Create your account to start playing
+        </p>
+      </div>
+      <SignUp 
+        routing="path"
+        path="/signup"
+        signInUrl="/signin"
+        redirectUrl="/"
+        appearance={{
+          variables: {
+            colorPrimary: '#3245ff',
+            colorText: '#111827',
+            colorTextSecondary: '#6b7280',
+            colorBackground: '#ffffff',
+            colorInputBackground: '#ffffff',
+            colorInputText: '#111827',
+          },
+          elements: {
+            rootBox: {
+              width: '100%',
+              margin: '0 auto'
+            },
+            card: {
+              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+              borderRadius: '16px',
+              border: '1px solid #e5e7eb',
+              width: '100%'
+            },
+            headerTitle: {
+              fontSize: '1.5rem',
+              fontWeight: 'bold'
+            },
+            headerSubtitle: {
+              fontSize: '0.875rem'
+            },
+            formButtonPrimary: {
+              background: 'linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%)',
+              borderRadius: '8px',
+              padding: '0.75rem 1.5rem',
+              fontSize: '1rem',
+              fontWeight: '600'
+            },
+            formFieldInput: {
+              borderRadius: '8px',
+              padding: '0.75rem'
+            },
+            footerActionLink: {
+              fontWeight: '600'
+            },
+            socialButtonsBlockButton: {
+              borderRadius: '8px',
+              border: '1px solid #e5e7eb'
+            },
+            dividerLine: {
+              background: '#e5e7eb'
+            },
+            dividerText: {
+              fontSize: '0.875rem'
+            }
+          }
+        }}
+      />
+      <div style="text-align: center; margin-top: 2rem; color: #6b7280; font-size: 0.875rem;">
+        <p>By signing up, you agree to our <a href="/terms" style="color: #3245ff;">Terms</a> and <a href="/privacy" style="color: #3245ff;">Privacy Policy</a></p>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* Estilos para los estados hover (deben ir en un tag style separado) */
+  .cl-formButtonPrimary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(50, 69, 255, 0.3) !important;
+  }
+  
+  .cl-footerActionLink:hover {
+    text-decoration: underline !important;
+  }
+  
+  .cl-socialButtonsBlockButton:hover {
+    border-color: #3245ff !important;
+    transform: translateY(-2px);
+  }
+</style>
+
+================================================================================
+ARCHIVO: src/pages/tinder.astro
+================================================================================
+
+---
+import Layout from '../layouts/Layout.astro';
+import TinderSwipe from '../components/TinderSwipe.astro';
+import { SignedIn, SignedOut } from '@clerk/astro/components';
+---
+
+<Layout title="Decision Tinder">
+  <SignedOut>
+    <main style="text-align: center; padding: 4rem 1rem;">
+      <div style="max-width: 600px; margin: 0 auto;">
+        <h1 style="font-size: 2rem; margin-bottom: 1rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Sign In to Play Decision Tinder
+        </h1>
+        <p style="color: #666; margin-bottom: 2rem;">
+          Swipe left or right to make choices in fun visual dilemmas. Your progress will be saved when you're signed in!
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="/signup" style="padding: 0.8rem 2rem; background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: transform 0.2s;">
+            Sign Up Free
+          </a>
+          <a href="/signin" style="padding: 0.8rem 2rem; background: transparent; color: #3245ff; text-decoration: none; border: 2px solid #3245ff; border-radius: 8px; font-weight: bold; transition: all 0.2s;">
+            Sign In
+          </a>
+        </div>
+        
+        {/* Preview del juego */}
+        <div style="margin-top: 3rem; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1);">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; color: white;">
+            <h3 style="margin: 0;">Preview</h3>
+          </div>
+          <div style="padding: 2rem; background: #f8f9fa;">
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem;">
+              <div style="background: white; padding: 1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%); border-radius: 8px; margin-bottom: 0.5rem;"></div>
+                <span>Swipe Left</span>
+              </div>
+              <div style="background: white; padding: 1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #4ecdc4 0%, #00b894 100%); border-radius: 8px; margin-bottom: 0.5rem;"></div>
+                <span>Swipe Right</span>
+              </div>
+            </div>
+            <p style="color: #666; font-size: 0.875rem;">
+              Make quick decisions and see your results at the end!
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </SignedOut>
+  
+  <SignedIn>
+    <main style="height: 100vh; overflow: hidden;">
+      <TinderSwipe />
+    </main>
+  </SignedIn>
+</Layout>
 
 ================================================================================
 ARCHIVO: tsconfig.json

@@ -1,0 +1,1020 @@
+---
+// Importar los datos
+import dilemmasData from '../data/dilemmas.json';
+
+// Crear una variable para pasar al script
+const dilemmas = dilemmasData.scenes;
+
+// Convertir a JSON string de forma segura para Astro
+const dilemmasJSON = JSON.stringify(dilemmas);
+---
+
+<div id="tinder-app"></div>
+
+<script define:vars={{ dilemmasJSON }}>
+  // Parsear los datos que vienen del frontmatter
+  let dilemmas = [];
+  
+  try {
+    dilemmas = JSON.parse(dilemmasJSON);
+  } catch (error) {
+    console.error('Error parsing dilemmas data:', error);
+    // Datos de respaldo si hay error
+    dilemmas = [
+      {
+        scene_id: "1",
+        image_url: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop",
+        title: "Pizza vs Sushi",
+        comment: "Which would you choose for dinner tonight?",
+        options: [
+          { label: "Pizza 🍕", ref_valor: "pizza" },
+          { label: "Sushi 🍣", ref_valor: "sushi" }
+        ]
+      },
+      {
+        scene_id: "2",
+        image_url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop",
+        title: "Beach vs Mountains",
+        comment: "Where would you prefer to spend your vacation?",
+        options: [
+          { label: "Beach 🏖️", ref_valor: "beach" },
+          { label: "Mountains ⛰️", ref_valor: "mountains" }
+        ]
+      }
+    ];
+  }
+  
+  console.log('Dilemmas loaded:', dilemmas.length);
+  
+  // Estado de la aplicación
+  let currentIndex = 0;
+  let choices = {};
+  let isAnimating = false;
+  let showResults = false;
+  const totalDilemmas = dilemmas.length;
+
+  // Referencias del DOM
+  let appContainer = null;
+  let startX = 0;
+  let startY = 0;
+  let currentTranslateX = 0;
+  let isDragging = false;
+
+  // Funciones de utilidad
+  function getProgressPercentage() {
+    return ((currentIndex + 1) / totalDilemmas) * 100;
+  }
+  
+  function handleSwipe(direction) {
+    if (isAnimating || showResults || currentIndex >= totalDilemmas) return;
+    
+    const currentDilemma = dilemmas[currentIndex];
+    if (!currentDilemma) return;
+    
+    const chosenOption = direction === 'left' 
+      ? currentDilemma.options[0].ref_valor 
+      : currentDilemma.options[1].ref_valor;
+    
+    choices[currentDilemma.scene_id] = chosenOption;
+    isAnimating = true;
+    
+    // Animar la tarjeta
+    const card = document.querySelector('.card.current');
+    if (card) {
+      card.classList.add(`swipe-${direction}`);
+    }
+    
+    setTimeout(() => {
+      if (currentIndex < totalDilemmas - 1) {
+        currentIndex++;
+        isAnimating = false;
+        render();
+      } else {
+        showResults = true;
+        renderResults();
+      }
+    }, 400);
+  }
+  
+  function handleReset() {
+    currentIndex = 0;
+    choices = {};
+    showResults = false;
+    render();
+  }
+  
+  function createCardElement(dilemma, position) {
+    const isCurrent = position === 0;
+    const scale = 1 - (position * 0.05);
+    const translateY = position * 10;
+    const opacity = position === 0 ? 1 : 0.5;
+    
+    const card = document.createElement('div');
+    card.className = `card ${isCurrent ? 'current' : ''}`;
+    card.style.cssText = `
+      z-index: ${100 - position};
+      transform: translateY(${translateY}px) scale(${scale});
+      opacity: ${opacity};
+    `;
+    
+    // Datos seguros para innerHTML
+    const imageUrl = dilemma.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop';
+    const title = dilemma.title || 'Untitled';
+    const comment = dilemma.comment || '';
+    const optionLeft = dilemma.options && dilemma.options[0] ? dilemma.options[0].label : 'Option A';
+    const optionRight = dilemma.options && dilemma.options[1] ? dilemma.options[1].label : 'Option B';
+    
+    card.innerHTML = `
+      <div class="card-image-container">
+        <img 
+          src="${imageUrl}" 
+          alt="${title}"
+          class="card-image"
+          loading="lazy"
+        />
+        <div class="image-overlay"></div>
+      </div>
+      
+      <div class="card-content">
+        <h2 class="card-title">${title}</h2>
+        <p class="card-comment">${comment}</p>
+        
+        <div class="options-container">
+          <div class="option-left">
+            <div class="option-icon">👈</div>
+            <div class="option-label">${optionLeft}</div>
+          </div>
+          <div class="vs">VS</div>
+          <div class="option-right">
+            <div class="option-icon">👉</div>
+            <div class="option-label">${optionRight}</div>
+          </div>
+        </div>
+      </div>
+      
+      ${isCurrent ? `
+        <div class="swipe-overlay swipe-left-overlay">
+          <div class="swipe-indicator">👈 NOPE</div>
+        </div>
+        <div class="swipe-overlay swipe-right-overlay">
+          <div class="swipe-indicator">👉 LIKE</div>
+        </div>
+      ` : ''}
+    `;
+    
+    return card;
+  }
+  
+  function createResultsElement() {
+    const container = document.createElement('div');
+    container.className = 'results-container';
+    
+    let resultsHTML = `
+      <h2>Your Choices</h2>
+      <div class="results-grid">
+    `;
+    
+    dilemmas.forEach(dilemma => {
+      const choice = choices[dilemma.scene_id];
+      const chosenLabel = choice === dilemma.options[0].ref_valor 
+        ? dilemma.options[0].label 
+        : dilemma.options[1].label;
+      
+      const imageUrl = dilemma.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop';
+      const title = dilemma.title || 'Untitled';
+      const comment = dilemma.comment || '';
+      
+      resultsHTML += `
+        <div class="result-card">
+          <img 
+            src="${imageUrl}" 
+            alt="${title}"
+            class="result-image"
+          />
+          <div class="result-content">
+            <h3>${title}</h3>
+            <p>${comment}</p>
+            <div class="result-choice">
+              <span class="choice-label">You chose:</span>
+              <span class="choice-value">${chosenLabel}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    
+    resultsHTML += `
+      </div>
+      <button class="reset-button">Play Again</button>
+    `;
+    
+    container.innerHTML = resultsHTML;
+    
+    // Bind reset button
+    const resetBtn = container.querySelector('.reset-button');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', handleReset);
+    }
+    
+    return container;
+  }
+  
+  function render() {
+    appContainer = document.getElementById('tinder-app');
+    if (!appContainer) {
+      console.error('Container #tinder-app not found');
+      return;
+    }
+    
+    // Limpiar solo si tenemos datos
+    if (dilemmas.length === 0) {
+      appContainer.innerHTML = `
+        <div class="error-container">
+          <div>
+            <h1 style="margin-bottom: 1rem;">No Game Data</h1>
+            <p>Unable to load dilemmas. Please check the data file.</p>
+            <button onclick="window.location.reload()" class="error-button">
+              Try Again
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    appContainer.innerHTML = '';
+    
+    const container = document.createElement('div');
+    container.className = 'tinder-container';
+    
+    // Header
+    container.innerHTML = `
+      <div class="tinder-header">
+        <h1>Decision Tinder</h1>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: ${getProgressPercentage()}%"></div>
+          <span class="progress-text">
+            ${currentIndex + 1} / ${totalDilemmas}
+          </span>
+        </div>
+      </div>
+      
+      <div class="cards-container"></div>
+      
+      <div class="action-buttons">
+        <button class="action-button reject-button" ${isAnimating ? 'disabled' : ''}>
+          <span class="button-icon">👈</span>
+          <span class="button-text">Nope</span>
+        </button>
+        <button class="action-button accept-button" ${isAnimating ? 'disabled' : ''}>
+          <span class="button-text">Like</span>
+          <span class="button-icon">👉</span>
+        </button>
+      </div>
+    `;
+    
+    // Cards
+    const cardsContainer = container.querySelector('.cards-container');
+    if (cardsContainer) {
+      const visibleCards = dilemmas.slice(currentIndex, Math.min(currentIndex + 3, totalDilemmas));
+      
+      visibleCards.forEach((dilemma, index) => {
+        const card = createCardElement(dilemma, index);
+        cardsContainer.appendChild(card);
+      });
+    }
+    
+    appContainer.appendChild(container);
+    bindEvents();
+  }
+  
+  function renderResults() {
+    appContainer = document.getElementById('tinder-app');
+    if (!appContainer) return;
+    
+    appContainer.innerHTML = '';
+    const results = createResultsElement();
+    appContainer.appendChild(results);
+  }
+  
+  function bindEvents() {
+    // Botón izquierdo
+    const rejectBtn = document.querySelector('.reject-button');
+    if (rejectBtn) {
+      rejectBtn.addEventListener('click', () => handleSwipe('left'));
+    }
+    
+    // Botón derecho
+    const acceptBtn = document.querySelector('.accept-button');
+    if (acceptBtn) {
+      acceptBtn.addEventListener('click', () => handleSwipe('right'));
+    }
+    
+    // Swipe táctil y mouse
+    setupSwipeEvents();
+  }
+  
+  function setupSwipeEvents() {
+    const card = document.querySelector('.card.current');
+    if (!card) return;
+    
+    const leftOverlay = card.querySelector('.swipe-left-overlay');
+    const rightOverlay = card.querySelector('.swipe-right-overlay');
+    
+    function handleStart(clientX, clientY) {
+      if (isAnimating) return;
+      startX = clientX;
+      startY = clientY;
+      isDragging = true;
+      card.style.transition = 'none';
+    }
+    
+    function handleMove(clientX, clientY) {
+      if (!isDragging || isAnimating) return;
+      
+      const deltaX = clientX - startX;
+      const deltaY = clientY - startY;
+      
+      // Calcular rotación basada en el movimiento
+      const rotate = deltaX * 0.1;
+      
+      currentTranslateX = deltaX;
+      
+      // Aplicar transformación
+      card.style.transform = `translateX(${deltaX}px) translateY(${deltaY * 0.5}px) rotate(${rotate}deg)`;
+      
+      // Mostrar overlays según dirección
+      const opacity = Math.min(Math.abs(deltaX) / 100, 1);
+      
+      if (deltaX < 0 && leftOverlay) {
+        leftOverlay.style.opacity = opacity;
+      } else if (leftOverlay) {
+        leftOverlay.style.opacity = 0;
+      }
+      
+      if (deltaX > 0 && rightOverlay) {
+        rightOverlay.style.opacity = opacity;
+      } else if (rightOverlay) {
+        rightOverlay.style.opacity = 0;
+      }
+    }
+    
+    function handleEnd() {
+      if (!isDragging || isAnimating) return;
+      
+      isDragging = false;
+      card.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      
+      // Si el swipe fue significativo (más de 100px)
+      if (Math.abs(currentTranslateX) > 100) {
+        const direction = currentTranslateX < 0 ? 'left' : 'right';
+        handleSwipe(direction);
+      } else {
+        // Volver a la posición original
+        card.style.transform = 'translateX(0) translateY(0) rotate(0)';
+        if (leftOverlay) leftOverlay.style.opacity = 0;
+        if (rightOverlay) rightOverlay.style.opacity = 0;
+      }
+      
+      currentTranslateX = 0;
+    }
+    
+    // Touch events
+    card.addEventListener('touchstart', (e) => {
+      handleStart(e.touches[0].clientX, e.touches[0].clientY);
+    });
+    
+    card.addEventListener('touchmove', (e) => {
+      if (isDragging) e.preventDefault();
+      handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    });
+    
+    card.addEventListener('touchend', handleEnd);
+    
+    // Mouse events
+    card.addEventListener('mousedown', (e) => {
+      handleStart(e.clientX, e.clientY);
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+      handleMove(e.clientX, e.clientY);
+    });
+    
+    document.addEventListener('mouseup', handleEnd);
+  }
+  
+  // Inicializar cuando el DOM esté listo
+  function init() {
+    if (dilemmas.length > 0) {
+      render();
+    } else {
+      console.error('No dilemmas data available');
+      const appContainer = document.getElementById('tinder-app');
+      if (appContainer) {
+        appContainer.innerHTML = `
+          <div class="error-container">
+            <div>
+              <h1 style="margin-bottom: 1rem;">⚠️ Game Data Error</h1>
+              <p>Using demo data instead...</p>
+              <div class="spinner"></div>
+            </div>
+          </div>
+        `;
+        setTimeout(() => {
+          render();
+        }, 2000);
+      }
+    }
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>
+
+<style>
+  /* Animación de carga */
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .spinner {
+    margin-top: 2rem;
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Estilos optimizados para el componente Tinder */
+  :root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --reject-gradient: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+    --accept-gradient: linear-gradient(135deg, #4ecdc4 0%, #00b894 100%);
+    --progress-gradient: linear-gradient(90deg, #00ff88 0%, #00ccff 100%);
+    --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.2);
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  #tinder-app {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .tinder-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--primary-gradient);
+    position: relative;
+  }
+
+  .tinder-header {
+    padding: 1.5rem;
+    text-align: center;
+    color: white;
+    position: relative;
+    z-index: 100;
+    flex-shrink: 0;
+  }
+
+  .tinder-header h1 {
+    margin: 0 0 1rem;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  .progress-container {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.2);
+    height: 6px;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--progress-gradient);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    position: absolute;
+    top: -25px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+  }
+
+  .cards-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 1rem;
+    min-height: 0;
+  }
+
+  .card {
+    position: absolute;
+    width: calc(100% - 2rem);
+    max-width: 400px;
+    height: min(550px, 75vh);
+    background: white;
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+
+  .card:active {
+    cursor: grabbing;
+  }
+
+  .card.current {
+    cursor: grab;
+  }
+
+  .swipe-left {
+    transform: translateX(-150%) rotate(-30deg) !important;
+    opacity: 0 !important;
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out !important;
+  }
+
+  .swipe-right {
+    transform: translateX(150%) rotate(30deg) !important;
+    opacity: 0 !important;
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out !important;
+  }
+
+  .card-image-container {
+    width: 100%;
+    height: 60%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover .card-image {
+    transform: scale(1.05);
+  }
+
+  .image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  }
+
+  .card-content {
+    padding: 1.5rem;
+    height: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .card-comment {
+    margin: 0 0 1rem;
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .options-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: auto;
+  }
+
+  .option-left, .option-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+
+  .option-left {
+    background: var(--reject-gradient);
+    color: white;
+  }
+
+  .option-right {
+    background: var(--accept-gradient);
+    color: white;
+  }
+
+  .option-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .option-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .vs {
+    font-weight: bold;
+    color: #888;
+    padding: 0 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  /* Swipe overlays */
+  .swipe-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  .swipe-left-overlay {
+    left: 0;
+    background: linear-gradient(90deg, rgba(255, 75, 87, 0.9), transparent);
+  }
+
+  .swipe-right-overlay {
+    right: 0;
+    background: linear-gradient(-90deg, rgba(78, 205, 196, 0.9), transparent);
+  }
+
+  .swipe-indicator {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    transform: rotate(-15deg);
+    padding: 1rem 2rem;
+    border: 4px solid white;
+    border-radius: 12px;
+  }
+
+  .swipe-right-overlay .swipe-indicator {
+    transform: rotate(15deg);
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    padding: 1.5rem;
+    position: relative;
+    z-index: 100;
+    flex-shrink: 0;
+  }
+
+  .action-button {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    min-width: 140px;
+    justify-content: center;
+  }
+
+  .action-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .action-button:not(:disabled):hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .action-button:not(:disabled):active {
+    transform: translateY(-1px);
+  }
+
+  .reject-button {
+    background: var(--reject-gradient);
+    color: white;
+  }
+
+  .accept-button {
+    background: var(--accept-gradient);
+    color: white;
+  }
+
+  .button-icon {
+    font-size: 1.5rem;
+  }
+
+  .button-text {
+    font-size: 1rem;
+  }
+
+  /* Results Styles */
+  .results-container {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 1rem;
+    text-align: center;
+    background: var(--primary-gradient);
+  }
+
+  .results-container h2 {
+    color: white;
+    margin: 0 0 1.5rem;
+    font-size: 2rem;
+    padding-top: 1rem;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 0 0.5rem;
+  }
+
+  .result-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.3s ease;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .result-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .result-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+  }
+
+  .result-content {
+    padding: 1rem;
+  }
+
+  .result-content h3 {
+    margin: 0 0 0.5rem;
+    color: #333;
+    font-size: 1.25rem;
+  }
+
+  .result-content p {
+    margin: 0 0 1rem;
+    color: #666;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .result-choice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 8px;
+  }
+
+  .choice-label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.875rem;
+  }
+
+  .choice-value {
+    color: #667eea;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+
+  .reset-button {
+    padding: 1rem 2.5rem;
+    background: white;
+    color: #667eea;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    margin-bottom: 2rem;
+  }
+
+  .reset-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    background: #f8f9fa;
+  }
+
+  .error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: var(--primary-gradient);
+    color: white;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .error-button {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    color: #667eea;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .error-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { 
+      opacity: 0; 
+      transform: translateY(20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .tinder-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card {
+      height: min(500px, 70vh);
+      width: calc(100% - 1rem);
+    }
+
+    .card-content {
+      padding: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+    }
+
+    .card-comment {
+      font-size: 0.875rem;
+    }
+
+    .action-button {
+      padding: 0.875rem 1.5rem;
+      min-width: 120px;
+    }
+
+    .button-icon {
+      font-size: 1.25rem;
+    }
+
+    .results-container h2 {
+      font-size: 1.5rem;
+    }
+
+    .swipe-indicator {
+      font-size: 1.5rem;
+      padding: 0.75rem 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .tinder-header {
+      padding: 1rem;
+    }
+
+    .tinder-header h1 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .card {
+      height: min(450px, 65vh);
+      border-radius: 20px;
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+    }
+
+    .options-container {
+      gap: 0.5rem;
+    }
+
+    .option-left, .option-right {
+      padding: 0.5rem;
+    }
+
+    .option-icon {
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .option-label {
+      font-size: 0.75rem;
+    }
+
+    .action-buttons {
+      gap: 0.75rem;
+      padding: 1rem;
+    }
+
+    .action-button {
+      min-width: 100px;
+      padding: 0.75rem 1rem;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .button-icon {
+      font-size: 1.75rem;
+    }
+
+    .button-text {
+      font-size: 0.75rem;
+    }
+
+    .results-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .result-image {
+      height: 120px;
+    }
+
+    .reset-button {
+      padding: 0.875rem 2rem;
+      font-size: 0.875rem;
+    }
+
+    .swipe-indicator {
+      font-size: 1.25rem;
+      padding: 0.5rem 1rem;
+      border-width: 3px;
+    }
+  }
+</style>
