@@ -1,4 +1,4 @@
----
+<!-- ---
 import Layout from '../layouts/Layout.astro';
 import TinderSwipe from '../components/TinderSwipe.astro';
 import { SignedIn, SignedOut } from '@clerk/astro/components';
@@ -53,4 +53,710 @@ import { SignedIn, SignedOut } from '@clerk/astro/components';
       <TinderSwipe />
     </main>
   </SignedIn>
+</Layout> -->
+
+
+
+---
+import Layout from '../layouts/Layout.astro';
+import TinderSwipe from '../components/TinderSwipe.astro';
+import { SignedIn, SignedOut, SignInButton, SignUpButton } from '@clerk/astro/components';
+---
+
+<Layout title="Decision Tinder">
+  <SignedOut>
+    <main class="tinder-signedout">
+      <div class="tinder-container">
+        <div class="tinder-header">
+          <div class="tinder-logo">
+            <span class="tinder-icon">⟡</span>
+            <h1 class="tinder-title">Decision Tinder</h1>
+          </div>
+          <p class="tinder-subtitle">
+            Swipe your way through visual dilemmas. Trust your gut, make quick decisions, and discover your preferences.
+          </p>
+        </div>
+
+        <div class="tinder-preview">
+          <div class="preview-header">
+            <div class="preview-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              Live Preview
+            </div>
+          </div>
+          
+          <div class="preview-content">
+            <div class="preview-card left-card">
+              <div class="card-illustration red-gradient">
+                <div class="swipe-indicator left-indicator">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+                  </svg>
+                </div>
+                <div class="card-label">Choice A</div>
+              </div>
+              <div class="card-info">
+                <h3>Mountain Sunrise</h3>
+                <p>Calm morning hike with breathtaking views</p>
+              </div>
+            </div>
+
+            <div class="preview-card right-card">
+              <div class="card-illustration blue-gradient">
+                <div class="swipe-indicator right-indicator">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                  </svg>
+                </div>
+                <div class="card-label">Choice B</div>
+              </div>
+              <div class="card-info">
+                <h3>Beach Sunset</h3>
+                <p>Relaxing evening by the ocean waves</p>
+              </div>
+            </div>
+
+            <div class="preview-instructions">
+              <div class="instruction">
+                <div class="instruction-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                  </svg>
+                </div>
+                <span>Choose between two visual options</span>
+              </div>
+              <div class="instruction">
+                <div class="instruction-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                </div>
+                <span>Swipe left or right to decide</span>
+              </div>
+              <div class="instruction">
+                <div class="instruction-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                </div>
+                <span>Track your preferences over time</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tinder-cta">
+          <div class="cta-content">
+            <h2 class="cta-title">Ready to start swiping?</h2>
+            <p class="cta-description">
+              Create a free account to save your progress, unlock all dilemmas, and join our community of decision-makers.
+            </p>
+            
+            <div class="cta-features">
+              <div class="feature">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>Unlimited dilemmas</span>
+              </div>
+              <div class="feature">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Personalized dashboard</span>
+              </div>
+              <div class="feature">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Compare with friends</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="cta-buttons">
+            <SignUpButton mode="modal">
+              <button class="btn-primary">
+                <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="8.5" cy="7" r="4"/>
+                  <line x1="20" y1="8" x2="20" y2="14"/>
+                  <line x1="23" y1="11" x2="17" y2="11"/>
+                </svg>
+                Get Started Free
+              </button>
+            </SignUpButton>
+            
+            <SignInButton mode="modal">
+              <button class="btn-secondary">
+                <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                  <polyline points="10 17 15 12 10 7"/>
+                  <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+                Sign In
+              </button>
+            </SignInButton>
+          </div>
+        </div>
+      </div>
+    </main>
+  </SignedOut>
+  
+  <SignedIn>
+    <main class="tinder-signedin">
+      <TinderSwipe />
+    </main>
+  </SignedIn>
 </Layout>
+
+<style>
+  /* ========================================
+     BASE STYLES
+     ======================================== */
+  .tinder-signedout {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, 
+      rgba(247, 248, 252, 0.9) 0%, 
+      rgba(242, 243, 248, 0.9) 100%);
+    animation: fadeIn 0.6s var(--transition-smooth);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .tinder-signedout {
+      background: linear-gradient(135deg, 
+        rgba(10, 10, 12, 0.9) 0%, 
+        rgba(20, 20, 24, 0.9) 100%);
+    }
+  }
+
+  .tinder-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3xl);
+  }
+
+  /* ========================================
+     HEADER SECTION
+     ======================================== */
+  .tinder-header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .tinder-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .tinder-icon {
+    font-size: 2.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .tinder-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .tinder-subtitle {
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* ========================================
+     PREVIEW SECTION
+     ======================================== */
+  .tinder-preview {
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    box-shadow: var(--shadow-floating);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .preview-header {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: var(--color-surface-hover);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .preview-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--color-primary);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .preview-badge svg {
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .preview-content {
+    padding: var(--spacing-3xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-3xl);
+  }
+
+  @media (min-width: 768px) {
+    .preview-content {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  .preview-card {
+    flex: 1;
+    min-width: 280px;
+    max-width: 320px;
+    background: var(--color-surface-solid);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    transition: all var(--transition-smooth);
+    position: relative;
+  }
+
+  .preview-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
+  }
+
+  .left-card:hover {
+    border-color: #ff4757;
+  }
+
+  .right-card:hover {
+    border-color: #00b894;
+  }
+
+  .card-illustration {
+    height: 200px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .red-gradient {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+  }
+
+  .blue-gradient {
+    background: linear-gradient(135deg, #4ecdc4 0%, #00b894 100%);
+  }
+
+  .swipe-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .left-indicator {
+    left: var(--spacing-lg);
+    color: #ff4757;
+  }
+
+  .right-indicator {
+    right: var(--spacing-lg);
+    color: #00b894;
+  }
+
+  .card-label {
+    position: absolute;
+    bottom: var(--spacing-md);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-lg);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+  }
+
+  .card-info {
+    padding: var(--spacing-xl);
+  }
+
+  .card-info h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text);
+  }
+
+  .card-info p {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .preview-instructions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    max-width: 400px;
+    margin-top: var(--spacing-xl);
+  }
+
+  @media (min-width: 768px) {
+    .preview-instructions {
+      position: absolute;
+      bottom: var(--spacing-3xl);
+      margin-top: 0;
+    }
+  }
+
+  .instruction {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  .instruction-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--color-surface-hover);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  .instruction span {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  /* ========================================
+     CTA SECTION
+     ======================================== */
+  .tinder-cta {
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--color-border);
+    padding: var(--spacing-3xl);
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .cta-content {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .cta-title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text);
+  }
+
+  .cta-description {
+    color: var(--color-text-secondary);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto var(--spacing-2xl);
+  }
+
+  .cta-features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+  }
+
+  .feature {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-surface-hover);
+    border-radius: var(--radius-lg);
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .feature svg {
+    color: var(--color-primary);
+  }
+
+  .cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 480px) {
+    .cta-buttons {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg) var(--spacing-2xl);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-smooth);
+    white-space: nowrap;
+    flex: 1;
+    min-width: 160px;
+  }
+
+  .btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .btn-primary:hover {
+    background: var(--gradient-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+  }
+
+  .btn-primary:hover .btn-icon {
+    transform: translateX(4px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-primary);
+    border: 1.5px solid var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-surface-hover);
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary:hover .btn-icon {
+    transform: translateX(2px);
+  }
+
+  .btn-icon {
+    transition: transform var(--transition-smooth);
+  }
+
+  /* ========================================
+     SIGNED IN STATE
+     ======================================== */
+  .tinder-signedin {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ========================================
+     RESPONSIVE DESIGN
+     ======================================== */
+  @media (max-width: 768px) {
+    .tinder-signedout {
+      padding: var(--spacing-lg);
+    }
+    
+    .tinder-container {
+      gap: var(--spacing-2xl);
+    }
+    
+    .preview-content {
+      padding: var(--spacing-xl);
+      gap: var(--spacing-xl);
+    }
+    
+    .preview-card {
+      min-width: 240px;
+    }
+    
+    .card-illustration {
+      height: 160px;
+    }
+    
+    .tinder-cta {
+      padding: var(--spacing-xl);
+    }
+    
+    .cta-features {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .preview-content {
+      flex-direction: column;
+    }
+    
+    .preview-card {
+      max-width: 100%;
+    }
+    
+    .swipe-indicator {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .swipe-indicator svg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+      padding: var(--spacing-md) var(--spacing-xl);
+      font-size: 0.9375rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .tinder-signedout {
+      padding: var(--spacing-md);
+    }
+    
+    .tinder-logo {
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+    
+    .preview-content {
+      padding: var(--spacing-lg);
+    }
+    
+    .card-info {
+      padding: var(--spacing-lg);
+    }
+    
+    .tinder-cta {
+      padding: var(--spacing-lg);
+    }
+    
+    .instruction {
+      font-size: 0.9375rem;
+    }
+  }
+
+  /* ========================================
+     ANIMATIONS
+     ======================================== */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* ========================================
+     PERFORMANCE OPTIMIZATIONS
+     ======================================== */
+  .tinder-preview,
+  .tinder-cta,
+  .preview-card,
+  .btn-primary,
+  .btn-secondary {
+    will-change: transform, box-shadow, background;
+  }
+</style>

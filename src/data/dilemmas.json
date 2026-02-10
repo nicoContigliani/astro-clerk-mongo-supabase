@@ -1,167 +1,196 @@
 {
   "version": "1.0",
-  "title": "Decision Tinder",
-  "description": "Swipe left or right based on your preferences",
+  "title": "Selección Argentina: ¿Lírico o Batallador?",
+  "description": "Swipe left or right basándote en tu visión del fútbol. Al final, revelaremos tu sesgo político y de qué partido probablemente sos.",
   "scenes": [
     {
       "scene_id": "1",
-      "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop",
-      "title": "Pizza vs Sushi",
-      "comment": "Which would you choose for dinner tonight?",
+      "image_url": "https://images.unsplash.com/photo-1626248801379-51ee15d8f5e9?w=800&h=600&fit=crop",
+      "title": "Estilo de juego",
+      "comment": "¿Qué prefieres para la Selección?",
       "options": [
         {
-          "label": "Pizza 🍕",
-          "ref_valor": "pizza"
+          "label": "Fútbol lindo y posesión 🎨",
+          "ref_valor": "estetico"
         },
         {
-          "label": "Sushi 🍣",
-          "ref_valor": "sushi"
+          "label": "Resultado y garra, como sea ⚔️",
+          "ref_valor": "batallador"
         }
       ]
     },
     {
       "scene_id": "2",
-      "image_url": "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop",
-      "title": "Beach vs Mountains",
-      "comment": "Where would you prefer to spend your vacation?",
+      "image_url": "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=800&h=600&fit=crop",
+      "title": "Figura excluyente",
+      "comment": "En un equipo ideal, ¿qué tipo de figura es indispensable?",
       "options": [
         {
-          "label": "Beach 🏖️",
-          "ref_valor": "beach"
+          "label": "Un 10 creativo (como Riquelme) 🧠",
+          "ref_valor": "enganche"
         },
         {
-          "label": "Mountains ⛰️",
-          "ref_valor": "mountains"
+          "label": "Un 5 o un 9 de área (como Mascherano o Batistuta) 💥",
+          "ref_valor": "guerrero"
         }
       ]
     },
     {
       "scene_id": "3",
-      "image_url": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop",
-      "title": "Movie Night",
-      "comment": "What type of movie would you watch?",
+      "image_url": "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=600&fit=crop",
+      "title": "DT ideal post-Scaloni",
+      "comment": "¿Qué perfil de técnico te gustaría?",
       "options": [
         {
-          "label": "Action 🎬",
-          "ref_valor": "action"
+          "label": "Un ideólogo con proyecto a largo plazo 📈",
+          "ref_valor": "proyecto"
         },
         {
-          "label": "Romance 💖",
-          "ref_valor": "romance"
+          "label": "Un práctico, que gane ahora mismo 🏆",
+          "ref_valor": "resultado"
         }
       ]
     },
     {
       "scene_id": "4",
-      "image_url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop",
-      "title": "Coffee Shop",
-      "comment": "Which drink would you order?",
+      "image_url": "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=800&h=600&fit=crop",
+      "title": "El próximo capitán",
+      "comment": "Tras la retirada de Messi, ¿qué característica debe primar?",
       "options": [
         {
-          "label": "Coffee ☕",
-          "ref_valor": "coffee"
+          "label": "Serenidad y ejemplo dentro de la cancha 🤝",
+          "ref_valor": "lider_silencioso"
         },
         {
-          "label": "Tea 🍵",
-          "ref_valor": "tea"
+          "label": "Pasión y conexión con la hinchada 🔥",
+          "ref_valor": "lider_pasion"
         }
       ]
     },
     {
       "scene_id": "5",
-      "image_url": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
-      "title": "Work Style",
-      "comment": "How do you prefer to work?",
+      "image_url": "https://images.unsplash.com/photo-1626248801379-51ee15d8f5e9?w=800&h=600&fit=crop",
+      "title": "La Convocatoria Polémica",
+      "comment": "Hay un jugador en un equipo chico que juega bien, pero otro en Europa tiene más nombre. ¿A quién llamás?",
       "options": [
         {
-          "label": "Office 🏢",
-          "ref_valor": "office"
+          "label": "Al del equipo chico. Se basa en el presente. ⚖️",
+          "ref_valor": "merito"
         },
         {
-          "label": "Remote 🏠",
-          "ref_valor": "remote"
+          "label": "Al de Europa. La experiencia en alta competencia pesa. 🌍",
+          "ref_valor": "nombre"
         }
       ]
     },
     {
       "scene_id": "6",
-      "image_url": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop",
-      "title": "Music Genre",
-      "comment": "What music are you in the mood for?",
+      "image_url": "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=600&fit=crop",
+      "title": "El Clásico Rival",
+      "comment": "¿Cómo debe enfrentarse a Brasil?",
       "options": [
         {
-          "label": "Pop 🎵",
-          "ref_valor": "pop"
+          "label": "Con coraje, sin complejos. Ir a ganar siempre. 🦁",
+          "ref_valor": "sin_complejos"
         },
         {
-          "label": "Rock 🤘",
-          "ref_valor": "rock"
+          "label": "Con inteligencia táctica, buscando sus puntos débiles. 🕵️",
+          "ref_valor": "tactica"
         }
       ]
     },
     {
       "scene_id": "7",
-      "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
-      "title": "Pet Choice",
-      "comment": "If you could have any pet, which would it be?",
+      "image_url": "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=800&h=600&fit=crop",
+      "title": "La era Messi",
+      "comment": "¿Cómo definirías su legado en la Albiceleste?",
       "options": [
         {
-          "label": "Dog 🐕",
-          "ref_valor": "dog"
+          "label": "El genio que coronó un proyecto colectivo. 👨‍👩‍👧‍👦",
+          "ref_valor": "colectivo"
         },
         {
-          "label": "Cat 🐈",
-          "ref_valor": "cat"
+          "label": "El salvador que nos dio lo que tanto necesitábamos. 🦸",
+          "ref_valor": "heroe"
         }
       ]
     },
     {
       "scene_id": "8",
-      "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=600&fit=crop",
-      "title": "Sport Preference",
-      "comment": "Which sport would you rather play?",
+      "image_url": "https://images.unsplash.com/photo-1626248801379-51ee15d8f5e9?w=800&h=600&fit=crop",
+      "title": "La Polémica: jugar en Argentina",
+      "comment": "Un joven crack argentino elige quedarse en River/Boca en vez de irse a Europa. ¿Tu opinión?",
       "options": [
         {
-          "label": "Soccer ⚽",
-          "ref_valor": "soccer"
+          "label": "Es un error. Debe ir a competir al más alto nivel. ✈️",
+          "ref_valor": "europa"
         },
         {
-          "label": "Basketball 🏀",
-          "ref_valor": "basketball"
+          "label": "Hay que valorarlo. Fortalece el fútbol local. 🏠",
+          "ref_valor": "local"
         }
       ]
     },
     {
       "scene_id": "9",
-      "image_url": "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop",
-      "title": "Reading Material",
-      "comment": "What would you rather read?",
+      "image_url": "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=600&fit=crop",
+      "title": "La Hinchada",
+      "comment": "El rol de la hinchada en la cancha debe ser...",
       "options": [
         {
-          "label": "Fiction 📚",
-          "ref_valor": "fiction"
+          "label": "Apoyo incondicional, sea cual sea el rendimiento. 💙🤍",
+          "ref_valor": "incondicional"
         },
         {
-          "label": "Non-Fiction 📖",
-          "ref_valor": "nonfiction"
+          "label": "Exigente. La camiseta no se mancha. 🏴‍☠️",
+          "ref_valor": "exigente"
         }
       ]
     },
     {
       "scene_id": "10",
-      "image_url": "https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=800&h=600&fit=crop",
-      "title": "Season Preference",
-      "comment": "Which season do you enjoy more?",
+      "image_url": "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=800&h=600&fit=crop",
+      "title": "El futuro",
+      "comment": "¿Cuál es el mayor desafío para la Selección?",
       "options": [
         {
-          "label": "Summer ☀️",
-          "ref_valor": "summer"
+          "label": "Renovarse sin traumas, manteniendo una idea. 🔄",
+          "ref_valor": "continuidad"
         },
         {
-          "label": "Winter ❄️",
-          "ref_valor": "winter"
+          "label": "Encontrar nuevas figuras que tengan hambre de gloria. 🐺",
+          "ref_valor": "hambre"
         }
       ]
     }
-  ]
+  ],
+  "resultados": {
+    "interpretacion": "Sumá 1 punto por cada respuesta de la columna A y 1 punto por cada respuesta de la columna B. Luego identificá tu perfil según dónde tengas más puntos.",
+    "columnas": {
+      "columna_a": ["estetico", "enganche", "proyecto", "lider_silencioso", "merito", "tactica", "colectivo", "local", "incondicional", "continuidad"],
+      "columna_b": ["batallador", "guerrero", "resultado", "lider_pasion", "nombre", "sin_complejos", "heroe", "europa", "exigente", "hambre"]
+    },
+    "perfiles": [
+      {
+        "nombre": "🔵 Peronista K / Kirchnerista",
+        "condicion": "Mayoría de respuestas en Columna B",
+        "descripcion": "Valorás la garra, el resultado y las figuras heroicas. Creés en la pasión popular y en dar batalla sin complejos. Sos pragmático, te importa más el triunfo que la estética. Tu fútbol es una metáfora de la lucha."
+      },
+      {
+        "nombre": "🟡 Peronista no K / Radical",
+        "condicion": "Mayoría de respuestas en Columna A, especialmente en 'proyecto', 'continuidad' y 'colectivo'",
+        "descripcion": "Creés en los proyectos a largo plazo, en la serenidad y en el mérito. Preferís un fútbol ordenado y con idea. Sos más institucionalista que pasional."
+      },
+      {
+        "nombre": "⚪ Liberal / Libertario",
+        "condicion": "Mayoría de respuestas en Columna B, pero especialmente en 'europa', 'nombre' (mérito individual) y 'exigente'",
+        "descripcion": "Valorás el mérito individual, la competencia en el más alto nivel y la exigencia. Descreés de lo 'local' por sobre lo competitivo. Tu visión es meritocrática y global."
+      },
+      {
+        "nombre": "🔴 Socialdemócrata / Progresista",
+        "condicion": "Mezcla equilibrada, con preferencia por 'estetico', 'proyecto', 'colectivo' y 'local'",
+        "descripcion": "Buscás un equilibrio entre el fútbol lindo y el proyecto colectivo. Valorás lo local y el desarrollo, pero con una visión estructurada y moderna."
+      }
+    ]
+  }
 }

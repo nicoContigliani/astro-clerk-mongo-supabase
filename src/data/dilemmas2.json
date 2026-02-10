@@ -1,0 +1,167 @@
+{
+  "version": "1.0",
+  "title": "Decision Tinder",
+  "description": "Swipe left or right based on your preferences",
+  "scenes": [
+    {
+      "scene_id": "1",
+      "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop",
+      "title": "Pizza vs Sushi",
+      "comment": "Which would you choose for dinner tonight?",
+      "options": [
+        {
+          "label": "Pizza 🍕",
+          "ref_valor": "pizza"
+        },
+        {
+          "label": "Sushi 🍣",
+          "ref_valor": "sushi"
+        }
+      ]
+    },
+    {
+      "scene_id": "2",
+      "image_url": "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop",
+      "title": "Beach vs Mountains",
+      "comment": "Where would you prefer to spend your vacation?",
+      "options": [
+        {
+          "label": "Beach 🏖️",
+          "ref_valor": "beach"
+        },
+        {
+          "label": "Mountains ⛰️",
+          "ref_valor": "mountains"
+        }
+      ]
+    },
+    {
+      "scene_id": "3",
+      "image_url": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop",
+      "title": "Movie Night",
+      "comment": "What type of movie would you watch?",
+      "options": [
+        {
+          "label": "Action 🎬",
+          "ref_valor": "action"
+        },
+        {
+          "label": "Romance 💖",
+          "ref_valor": "romance"
+        }
+      ]
+    },
+    {
+      "scene_id": "4",
+      "image_url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop",
+      "title": "Coffee Shop",
+      "comment": "Which drink would you order?",
+      "options": [
+        {
+          "label": "Coffee ☕",
+          "ref_valor": "coffee"
+        },
+        {
+          "label": "Tea 🍵",
+          "ref_valor": "tea"
+        }
+      ]
+    },
+    {
+      "scene_id": "5",
+      "image_url": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+      "title": "Work Style",
+      "comment": "How do you prefer to work?",
+      "options": [
+        {
+          "label": "Office 🏢",
+          "ref_valor": "office"
+        },
+        {
+          "label": "Remote 🏠",
+          "ref_valor": "remote"
+        }
+      ]
+    },
+    {
+      "scene_id": "6",
+      "image_url": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop",
+      "title": "Music Genre",
+      "comment": "What music are you in the mood for?",
+      "options": [
+        {
+          "label": "Pop 🎵",
+          "ref_valor": "pop"
+        },
+        {
+          "label": "Rock 🤘",
+          "ref_valor": "rock"
+        }
+      ]
+    },
+    {
+      "scene_id": "7",
+      "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
+      "title": "Pet Choice",
+      "comment": "If you could have any pet, which would it be?",
+      "options": [
+        {
+          "label": "Dog 🐕",
+          "ref_valor": "dog"
+        },
+        {
+          "label": "Cat 🐈",
+          "ref_valor": "cat"
+        }
+      ]
+    },
+    {
+      "scene_id": "8",
+      "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=600&fit=crop",
+      "title": "Sport Preference",
+      "comment": "Which sport would you rather play?",
+      "options": [
+        {
+          "label": "Soccer ⚽",
+          "ref_valor": "soccer"
+        },
+        {
+          "label": "Basketball 🏀",
+          "ref_valor": "basketball"
+        }
+      ]
+    },
+    {
+      "scene_id": "9",
+      "image_url": "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop",
+      "title": "Reading Material",
+      "comment": "What would you rather read?",
+      "options": [
+        {
+          "label": "Fiction 📚",
+          "ref_valor": "fiction"
+        },
+        {
+          "label": "Non-Fiction 📖",
+          "ref_valor": "nonfiction"
+        }
+      ]
+    },
+    {
+      "scene_id": "10",
+      "image_url": "https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=800&h=600&fit=crop",
+      "title": "Season Preference",
+      "comment": "Which season do you enjoy more?",
+      "options": [
+        {
+          "label": "Summer ☀️",
+          "ref_valor": "summer"
+        },
+        {
+          "label": "Winter ❄️",
+          "ref_valor": "winter"
+        }
+      ]
+    }
+  ]
+}

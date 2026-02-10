@@ -1,4 +1,4 @@
-CONTENIDO COMPLETO DEL PROYECTO================================================================================Directorio raíz: /home/nico/Atalaya/desarrollo/Astro/clerkastroGenerado el: 8/2/2026, 17:44:13Nombre: clerk-astro-quickstartDescripción: No especificadaVersión: 0.0.1
+CONTENIDO COMPLETO DEL PROYECTO================================================================================Directorio raíz: /home/nico/Atalaya/desarrollo/Astro/clerkastroGenerado el: 9/2/2026, 11:56:43Nombre: clerk-astro-quickstartDescripción: No especificadaVersión: 0.0.1
 ================================================================================RESUMEN DEL PROYECTO================================================================================
 ================================================================================
 ARCHIVO: .gitignore
@@ -4699,1045 +4699,942 @@ ARCHIVO: src/components/TinderSwipe.astro
 ================================================================================
 
 ---
-// Importar los datos
 import dilemmasData from '../data/dilemmas.json';
 
-// Crear una variable para pasar al script
 const dilemmas = dilemmasData.scenes;
+const dilemmasJSON = JSON.stringify(dilemmas);
 ---
 
-<div id="tinder-app"></div>
+<div data-tinder-root></div>
 
-<script>
-  // Pasar datos al script inline
-  (function() {
-    // Crear elemento script para almacenar datos
-    const scriptData = document.createElement('script');
-    scriptData.type = 'application/json';
-    scriptData.id = 'tinder-data';
-    
-    // Convertir datos a JSON (sin JSX)
-    const dataString = JSON.stringify(<%= JSON.stringify(dilemmas) %>);
-    scriptData.textContent = dataString;
-    
-    // Insertar antes del script actual
-    const currentScript = document.currentScript;
-    if (currentScript && currentScript.parentNode) {
-      currentScript.parentNode.insertBefore(scriptData, currentScript);
-    }
-  })();
-</script>
-
-<script is:inline>
-  // Obtener datos del elemento script
-  const dataElement = document.getElementById('tinder-data');
-  let dilemmas = [];
-  
-  if (dataElement && dataElement.textContent) {
+<script define:vars={{ dilemmasJSON }}>
+  (() => {
+    let dilemmas = [];
     try {
-      dilemmas = JSON.parse(dataElement.textContent);
-    } catch (error) {
-      console.error('Error parsing dilemmas data:', error);
-      // Datos de respaldo si hay error
-      dilemmas = [
-        {
-          scene_id: "1",
-          image_url: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop",
-          title: "Pizza vs Sushi",
-          comment: "Which would you choose for dinner tonight?",
-          options: [
-            { label: "Pizza 🍕", ref_valor: "pizza" },
-            { label: "Sushi 🍣", ref_valor: "sushi" }
-          ]
-        },
-        {
-          scene_id: "2",
-          image_url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop",
-          title: "Beach vs Mountains",
-          comment: "Where would you prefer to spend your vacation?",
-          options: [
-            { label: "Beach 🏖️", ref_valor: "beach" },
-            { label: "Mountains ⛰️", ref_valor: "mountains" }
-          ]
-        }
-      ];
+      dilemmas = JSON.parse(dilemmasJSON);
+    } catch (e) {
+      console.error('Error parsing data:', e);
+      dilemmas = [];
     }
-  }
-  
-  console.log('Dilemmas loaded:', dilemmas.length);
-  
-  // Estado de la aplicación
-  let currentIndex = 0;
-  let choices = {};
-  let isAnimating = false;
-  let showResults = false;
-  const totalDilemmas = dilemmas.length;
 
-  // Referencias del DOM
-  let appContainer = null;
+    const CONFIG = {
+      SWIPE_THRESHOLD: 100,
+      ROTATION_FACTOR: 0.15,
+      ANIMATION_DURATION: 400
+    };
 
-  // Funciones de utilidad
-  function getProgressPercentage() {
-    return ((currentIndex + 1) / totalDilemmas) * 100;
-  }
-  
-  function handleSwipe(direction) {
-    if (isAnimating || showResults || currentIndex >= totalDilemmas) return;
-    
-    const currentDilemma = dilemmas[currentIndex];
-    if (!currentDilemma) return;
-    
-    const chosenOption = direction === 'left' 
-      ? currentDilemma.options[0].ref_valor 
-      : currentDilemma.options[1].ref_valor;
-    
-    choices[currentDilemma.scene_id] = chosenOption;
-    isAnimating = true;
-    
-    // Animar la tarjeta
-    const card = document.querySelector('.card.current');
-    if (card) {
-      card.classList.add(`swipe-${direction}`);
-    }
-    
-    setTimeout(() => {
-      if (currentIndex < totalDilemmas - 1) {
-        currentIndex++;
-        isAnimating = false;
-        render();
-      } else {
-        showResults = true;
-        renderResults();
+    let state = {
+      currentIndex: 0,
+      choices: {},
+      isAnimating: false,
+      showResults: false,
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      currentX: 0,
+      currentY: 0
+    };
+
+    const init = () => {
+      if (!dilemmas.length) {
+        renderError();
+        return;
       }
-    }, 300);
-  }
-  
-  function handleReset() {
-    currentIndex = 0;
-    choices = {};
-    showResults = false;
-    render();
-  }
-  
-  function createCardElement(dilemma, position) {
-    const isCurrent = position === 0;
-    const scale = 1 - (position * 0.05);
-    const translateY = position * 20;
-    
-    const card = document.createElement('div');
-    card.className = `card ${isCurrent ? 'current' : ''}`;
-    card.style.cssText = `
-      z-index: ${100 - position};
-      transform: translateY(${translateY}px) scale(${scale});
-      opacity: ${1 - (position * 0.3)};
-    `;
-    
-    // Datos seguros para innerHTML
-    const imageUrl = dilemma.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop';
-    const title = dilemma.title || 'Untitled';
-    const comment = dilemma.comment || '';
-    const optionLeft = dilemma.options && dilemma.options[0] ? dilemma.options[0].label : 'Option A';
-    const optionRight = dilemma.options && dilemma.options[1] ? dilemma.options[1].label : 'Option B';
-    
-    card.innerHTML = `
-      <div class="card-image-container">
-        <img 
-          src="${imageUrl}" 
-          alt="${title}"
-          class="card-image"
-          loading="lazy"
-        />
-        <div class="image-overlay"></div>
-      </div>
+      render();
+      window.addEventListener('keydown', handleKeyPress);
+    };
+
+    const handleKeyPress = (e) => {
+      if (state.isAnimating || state.showResults || state.currentIndex >= dilemmas.length) return;
+      if (e.key === 'ArrowLeft') executeSwipe('left');
+      if (e.key === 'ArrowRight') executeSwipe('right');
+    };
+
+    const executeSwipe = (direction) => {
+      if (state.isAnimating || state.currentIndex >= dilemmas.length) return;
+
+      const currentDilemma = dilemmas[state.currentIndex];
+      const chosenOption = direction === 'left' 
+        ? currentDilemma.options[0].ref_valor 
+        : currentDilemma.options[1].ref_valor;
+
+      state.choices[currentDilemma.scene_id] = chosenOption;
+      state.isAnimating = true;
+
+      const card = document.querySelector('[data-card-active]');
+      const container = document.querySelector('[data-bg-container]');
       
-      <div class="card-content">
-        <h2 class="card-title">${title}</h2>
-        <p class="card-comment">${comment}</p>
+      if (card) {
+        const targetX = direction === 'left' ? -1200 : 1200;
+        const rotation = direction === 'left' ? -45 : 45;
         
-        <div class="options-container">
-          <div class="option-left">
-            <div class="option-icon">👈</div>
-            <div class="option-label">${optionLeft}</div>
+        card.style.transition = `all ${CONFIG.ANIMATION_DURATION}ms cubic-bezier(0.68, -0.55, 0.265, 1.55)`;
+        card.style.transform = `translateX(${targetX}px) translateY(-100px) rotate(${rotation}deg) scale(0.8)`;
+        card.style.opacity = '0';
+      }
+
+      if (container) {
+        container.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+      }
+
+      setTimeout(() => {
+        state.currentIndex++;
+        state.isAnimating = false;
+
+        if (state.currentIndex >= dilemmas.length) {
+          state.showResults = true;
+          renderResults();
+        } else {
+          render();
+        }
+      }, CONFIG.ANIMATION_DURATION);
+    };
+
+    const handleDragStart = (clientX, clientY) => {
+      if (state.isAnimating) return;
+      state.isDragging = true;
+      state.startX = clientX;
+      state.startY = clientY;
+      state.currentX = clientX;
+      state.currentY = clientY;
+
+      const card = document.querySelector('[data-card-active]');
+      if (card) {
+        card.style.transition = 'none';
+      }
+    };
+
+    const handleDragMove = (clientX, clientY) => {
+      if (!state.isDragging || state.isAnimating) return;
+
+      state.currentX = clientX;
+      state.currentY = clientY;
+
+      const deltaX = clientX - state.startX;
+      const deltaY = clientY - state.startY;
+      const rotation = deltaX * CONFIG.ROTATION_FACTOR;
+      const progress = Math.min(Math.abs(deltaX) / CONFIG.SWIPE_THRESHOLD, 1);
+
+      const card = document.querySelector('[data-card-active]');
+      const badgeLeft = document.querySelector('[data-badge-left]');
+      const badgeRight = document.querySelector('[data-badge-right]');
+      const container = document.querySelector('[data-bg-container]');
+
+      if (card) {
+        card.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotation}deg)`;
+      }
+
+      if (deltaX < 0) {
+        if (badgeLeft) badgeLeft.style.opacity = String(progress);
+        if (badgeRight) badgeRight.style.opacity = '0';
+        if (container) {
+          container.style.background = `linear-gradient(135deg, 
+            rgba(255, 107, 107, ${0.3 + progress * 0.7}) 0%, 
+            rgba(238, 82, 83, ${0.3 + progress * 0.7}) 100%)`;
+        }
+      } else if (deltaX > 0) {
+        if (badgeRight) badgeRight.style.opacity = String(progress);
+        if (badgeLeft) badgeLeft.style.opacity = '0';
+        if (container) {
+          container.style.background = `linear-gradient(135deg, 
+            rgba(78, 205, 196, ${0.3 + progress * 0.7}) 0%, 
+            rgba(29, 209, 161, ${0.3 + progress * 0.7}) 100%)`;
+        }
+      } else {
+        if (badgeLeft) badgeLeft.style.opacity = '0';
+        if (badgeRight) badgeRight.style.opacity = '0';
+        if (container) {
+          container.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        }
+      }
+    };
+
+    const handleDragEnd = () => {
+      if (!state.isDragging || state.isAnimating) return;
+      state.isDragging = false;
+
+      const deltaX = state.currentX - state.startX;
+      const card = document.querySelector('[data-card-active]');
+      const container = document.querySelector('[data-bg-container]');
+
+      if (Math.abs(deltaX) > CONFIG.SWIPE_THRESHOLD) {
+        executeSwipe(deltaX > 0 ? 'right' : 'left');
+      } else {
+        if (card) {
+          card.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+          card.style.transform = 'translate(0, 0) rotate(0deg)';
+        }
+
+        const badgeLeft = document.querySelector('[data-badge-left]');
+        const badgeRight = document.querySelector('[data-badge-right]');
+        if (badgeLeft) badgeLeft.style.opacity = '0';
+        if (badgeRight) badgeRight.style.opacity = '0';
+        if (container) {
+          container.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        }
+      }
+    };
+
+    const attachCardEvents = () => {
+      const card = document.querySelector('[data-card-active]');
+      if (!card) return;
+
+      const onMouseDown = (e) => handleDragStart(e.clientX, e.clientY);
+      const onMouseMove = (e) => handleDragMove(e.clientX, e.clientY);
+      const onMouseUp = () => handleDragEnd();
+
+      const onTouchStart = (e) => {
+        const touch = e.touches[0];
+        handleDragStart(touch.clientX, touch.clientY);
+      };
+      const onTouchMove = (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        handleDragMove(touch.clientX, touch.clientY);
+      };
+      const onTouchEnd = () => handleDragEnd();
+
+      card.addEventListener('mousedown', onMouseDown);
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+
+      card.addEventListener('touchstart', onTouchStart, { passive: true });
+      card.addEventListener('touchmove', onTouchMove, { passive: false });
+      card.addEventListener('touchend', onTouchEnd);
+    };
+
+    const createCard = (dilemma, isActive = false) => {
+      const zIndex = isActive ? 10 : 5;
+      const transform = isActive ? 'translate(0, 0) scale(1)' : 'translate(0, 10px) scale(0.95)';
+      const opacity = isActive ? '1' : '0.7';
+
+      return `
+        <div 
+          ${isActive ? 'data-card-active' : ''}
+          style="
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: clamp(16px, 4vw, 24px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            cursor: ${isActive ? 'grab' : 'default'};
+            user-select: none;
+            touch-action: none;
+            z-index: ${zIndex};
+            transform: ${transform};
+            opacity: ${opacity};
+            transition: transform 0.3s ease, opacity 0.3s ease;
+          "
+        >
+          <div style="
+            width: 100%;
+            height: 60%;
+            position: relative;
+            overflow: hidden;
+            background: #f0f0f0;
+          ">
+            <img 
+              src="${dilemma.image_url}" 
+              alt="${dilemma.title}"
+              style="
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                pointer-events: none;
+                user-select: none;
+              "
+              draggable="false"
+            />
+            <div style="
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              height: 50%;
+              background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+            "></div>
           </div>
-          <div class="vs">VS</div>
-          <div class="option-right">
-            <div class="option-icon">👉</div>
-            <div class="option-label">${optionRight}</div>
-          </div>
-        </div>
-      </div>
-      
-      ${isCurrent ? `
-        <div class="swipe-instructions">
-          <div class="swipe-left-instruction">
-            <span class="swipe-arrow">←</span>
-            <span>Swipe Left</span>
-          </div>
-          <div class="swipe-right-instruction">
-            <span>Swipe Right</span>
-            <span class="swipe-arrow">→</span>
-          </div>
-        </div>
-      ` : ''}
-    `;
-    
-    return card;
-  }
-  
-  function createResultsElement() {
-    const container = document.createElement('div');
-    container.className = 'results-container';
-    
-    let resultsHTML = `
-      <h2>Your Choices</h2>
-      <div class="results-grid">
-    `;
-    
-    dilemmas.forEach(dilemma => {
-      const choice = choices[dilemma.scene_id];
-      const chosenLabel = choice === dilemma.options[0].ref_valor 
-        ? dilemma.options[0].label 
-        : dilemma.options[1].label;
-      
-      const imageUrl = dilemma.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop';
-      const title = dilemma.title || 'Untitled';
-      const comment = dilemma.comment || '';
-      
-      resultsHTML += `
-        <div class="result-card">
-          <img 
-            src="${imageUrl}" 
-            alt="${title}"
-            class="result-image"
-          />
-          <div class="result-content">
-            <h3>${title}</h3>
-            <p>${comment}</p>
-            <div class="result-choice">
-              <span class="choice-label">You chose:</span>
-              <span class="choice-value">${chosenLabel}</span>
+
+          <div style="
+            height: 40%;
+            padding: clamp(1rem, 4vw, 1.5rem);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+          ">
+            <div>
+              <h2 style="
+                margin: 0 0 0.5rem 0;
+                font-size: clamp(1.25rem, 4vw, 1.75rem);
+                font-weight: 700;
+                color: #2d3436;
+                line-height: 1.2;
+              ">${dilemma.title}</h2>
+              <p style="
+                margin: 0;
+                font-size: clamp(0.875rem, 3vw, 1rem);
+                color: #636e72;
+                line-height: 1.4;
+              ">${dilemma.comment}</p>
+            </div>
+
+            <div style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 0.5rem;
+              margin-top: 0.5rem;
+            ">
+              <div style="
+                flex: 1;
+                background: linear-gradient(135deg, #ffe5e5, #ffd0d0);
+                padding: clamp(0.5rem, 2vw, 0.75rem);
+                border-radius: 12px;
+                text-align: center;
+              ">
+                <span style="
+                  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+                  font-weight: 600;
+                  color: #ff6b6b;
+                ">${dilemma.options[0].label}</span>
+              </div>
+              
+              <span style="
+                font-size: clamp(0.75rem, 2vw, 0.875rem);
+                font-weight: 700;
+                color: #b2bec3;
+              ">VS</span>
+              
+              <div style="
+                flex: 1;
+                background: linear-gradient(135deg, #e5f9f7, #d0f4ee);
+                padding: clamp(0.5rem, 2vw, 0.75rem);
+                border-radius: 12px;
+                text-align: center;
+              ">
+                <span style="
+                  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+                  font-weight: 600;
+                  color: #4ecdc4;
+                ">${dilemma.options[1].label}</span>
+              </div>
             </div>
           </div>
+
+          ${isActive ? `
+            <div data-badge-left style="
+              position: absolute;
+              top: clamp(30px, 8vw, 50px);
+              right: clamp(15px, 4vw, 30px);
+              border: 4px solid #ff6b6b;
+              color: #ff6b6b;
+              background: rgba(255, 255, 255, 0.95);
+              padding: clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 3vw, 1.5rem);
+              border-radius: 10px;
+              font-weight: 900;
+              font-size: clamp(1.25rem, 5vw, 2rem);
+              transform: rotate(15deg);
+              opacity: 0;
+              pointer-events: none;
+              transition: opacity 0.2s ease;
+              text-transform: uppercase;
+              letter-spacing: 2px;
+            ">NOPE</div>
+            <div data-badge-right style="
+              position: absolute;
+              top: clamp(30px, 8vw, 50px);
+              left: clamp(15px, 4vw, 30px);
+              border: 4px solid #4ecdc4;
+              color: #4ecdc4;
+              background: rgba(255, 255, 255, 0.95);
+              padding: clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 3vw, 1.5rem);
+              border-radius: 10px;
+              font-weight: 900;
+              font-size: clamp(1.25rem, 5vw, 2rem);
+              transform: rotate(-15deg);
+              opacity: 0;
+              pointer-events: none;
+              transition: opacity 0.2s ease;
+              text-transform: uppercase;
+              letter-spacing: 2px;
+            ">LIKE</div>
+          ` : ''}
         </div>
       `;
-    });
-    
-    resultsHTML += `
-      </div>
-      <button class="reset-button">Play Again</button>
-    `;
-    
-    container.innerHTML = resultsHTML;
-    
-    // Bind reset button
-    const resetBtn = container.querySelector('.reset-button');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', handleReset);
-    }
-    
-    return container;
-  }
-  
-  function render() {
-    appContainer = document.getElementById('tinder-app');
-    if (!appContainer) {
-      console.error('Container #tinder-app not found');
-      return;
-    }
-    
-    // Limpiar solo si tenemos datos
-    if (dilemmas.length === 0) {
-      appContainer.innerHTML = `
+    };
+
+    const render = () => {
+      const root = document.querySelector('[data-tinder-root]');
+      if (!root) return;
+
+      const currentDilemma = dilemmas[state.currentIndex];
+      const nextDilemma = dilemmas[state.currentIndex + 1];
+      const progress = ((state.currentIndex + 1) / dilemmas.length) * 100;
+
+      root.innerHTML = `
+        <div data-bg-container style="
+          position: fixed;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          transition: background 0.4s ease;
+          overflow: hidden;
+        ">
+          
+          <header style="
+            padding: clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 1.5rem);
+            text-align: center;
+            color: white;
+            flex-shrink: 0;
+          ">
+            <h1 style="
+              margin: 0 0 clamp(0.75rem, 3vw, 1rem) 0;
+              font-size: clamp(1.5rem, 5vw, 2rem);
+              font-weight: 900;
+              text-transform: uppercase;
+              letter-spacing: clamp(1px, 0.5vw, 3px);
+            ">Decision Tinder</h1>
+            
+            <div style="
+              position: relative;
+              width: min(200px, 80%);
+              height: 6px;
+              background: rgba(255, 255, 255, 0.2);
+              margin: 0 auto;
+              border-radius: 10px;
+              overflow: hidden;
+            ">
+              <div style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: ${progress}%;
+                background: linear-gradient(90deg, #00ff88, #00d9ff);
+                border-radius: 10px;
+                transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+              "></div>
+            </div>
+            
+            <p style="
+              margin: clamp(0.5rem, 2vw, 0.75rem) 0 0 0;
+              font-size: clamp(0.875rem, 3vw, 1rem);
+              opacity: 0.9;
+              font-weight: 500;
+            ">${state.currentIndex + 1} / ${dilemmas.length}</p>
+          </header>
+
+          <div style="
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(0.5rem, 2vw, 1rem);
+            min-height: 0;
+          ">
+            <div style="
+              position: relative;
+              width: 100%;
+              max-width: min(450px, 100%);
+              aspect-ratio: 3 / 4;
+              max-height: min(600px, 70vh);
+            ">
+              ${nextDilemma ? createCard(nextDilemma, false) : ''}
+              ${currentDilemma ? createCard(currentDilemma, true) : ''}
+            </div>
+          </div>
+
+          <footer style="
+            padding: clamp(1rem, 4vw, 2rem);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: clamp(1.5rem, 5vw, 3rem);
+            flex-shrink: 0;
+          ">
+            <button data-btn-left style="
+              width: clamp(60px, 15vw, 80px);
+              height: clamp(60px, 15vw, 80px);
+              border-radius: 50%;
+              border: none;
+              background: white;
+              color: #ff6b6b;
+              font-size: clamp(1.5rem, 5vw, 2rem);
+              cursor: pointer;
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+              transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: bold;
+            ">✕</button>
+            
+            <button data-btn-right style="
+              width: clamp(60px, 15vw, 80px);
+              height: clamp(60px, 15vw, 80px);
+              border-radius: 50%;
+              border: none;
+              background: white;
+              color: #4ecdc4;
+              font-size: clamp(1.5rem, 5vw, 2rem);
+              cursor: pointer;
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+              transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: bold;
+            ">❤</button>
+          </footer>
+        </div>
+      `;
+
+      attachCardEvents();
+      attachButtonEvents();
+    };
+
+    const attachButtonEvents = () => {
+      const btnLeft = document.querySelector('[data-btn-left]');
+      const btnRight = document.querySelector('[data-btn-right]');
+
+      const addButtonEffects = (btn) => {
+        btn.addEventListener('mousedown', () => {
+          btn.style.transform = 'scale(0.85)';
+        });
+        btn.addEventListener('mouseup', () => {
+          btn.style.transform = 'scale(1)';
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.transform = 'scale(1)';
+        });
+        btn.addEventListener('mouseenter', () => {
+          btn.style.transform = 'scale(1.1)';
+        });
+      };
+
+      if (btnLeft) {
+        btnLeft.addEventListener('click', () => executeSwipe('left'));
+        addButtonEffects(btnLeft);
+      }
+
+      if (btnRight) {
+        btnRight.addEventListener('click', () => executeSwipe('right'));
+        addButtonEffects(btnRight);
+      }
+    };
+
+    const renderResults = () => {
+      const root = document.querySelector('[data-tinder-root]');
+      if (!root) return;
+
+      // Crear lista completa de resultados con scroll virtual
+      const resultsHTML = dilemmas.map((dilemma, index) => {
+        const choice = state.choices[dilemma.scene_id];
+        const chosenOption = dilemma.options.find(opt => opt.ref_valor === choice);
+        const label = chosenOption ? chosenOption.label : 'N/A';
+        const isLeft = choice === dilemma.options[0].ref_valor;
+
+        return `
+          <article data-result-item="${index}" style="
+            background: white;
+            border-radius: clamp(12px, 3vw, 16px);
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.5s ease backwards;
+            animation-delay: ${index * 0.05}s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+          " onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.15)'" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'">
+            
+            <div style="
+              width: 100%;
+              height: clamp(140px, 35vw, 180px);
+              position: relative;
+              overflow: hidden;
+              background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+            ">
+              <img 
+                src="${dilemma.image_url}" 
+                alt="${dilemma.title}"
+                loading="lazy"
+                style="
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  transition: transform 0.3s ease;
+                "
+                onmouseenter="this.style.transform='scale(1.1)'"
+                onmouseleave="this.style.transform='scale(1)'"
+              />
+              <div style="
+                position: absolute;
+                top: clamp(8px, 2vw, 12px);
+                right: clamp(8px, 2vw, 12px);
+                background: ${isLeft ? 'linear-gradient(135deg, #ff6b6b, #ee5253)' : 'linear-gradient(135deg, #4ecdc4, #1dd1a1)'};
+                color: white;
+                padding: clamp(4px, 1.5vw, 6px) clamp(10px, 3vw, 14px);
+                border-radius: 20px;
+                font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+              ">${isLeft ? '👈 NOPE' : '❤ LIKE'}</div>
+            </div>
+
+            <div style="
+              padding: clamp(1rem, 4vw, 1.5rem);
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              gap: clamp(0.5rem, 2vw, 0.75rem);
+            ">
+              <div>
+                <h3 style="
+                  margin: 0 0 clamp(0.25rem, 1vw, 0.5rem) 0;
+                  font-size: clamp(1rem, 4vw, 1.25rem);
+                  font-weight: 700;
+                  color: #2d3436;
+                  line-height: 1.3;
+                ">${dilemma.title}</h3>
+                <p style="
+                  margin: 0;
+                  font-size: clamp(0.8rem, 3vw, 0.9rem);
+                  color: #636e72;
+                  line-height: 1.5;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 2;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                ">${dilemma.comment}</p>
+              </div>
+
+              <div style="margin-top: auto;">
+                <div style="
+                  display: flex;
+                  align-items: center;
+                  gap: clamp(0.5rem, 2vw, 0.75rem);
+                  padding: clamp(0.75rem, 3vw, 1rem);
+                  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+                  border-radius: 12px;
+                  border-left: 4px solid ${isLeft ? '#ff6b6b' : '#4ecdc4'};
+                ">
+                  <div style="
+                    flex-shrink: 0;
+                    width: clamp(32px, 10vw, 40px);
+                    height: clamp(32px, 10vw, 40px);
+                    background: ${isLeft ? 'linear-gradient(135deg, #ff6b6b, #ee5253)' : 'linear-gradient(135deg, #4ecdc4, #1dd1a1)'};
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: clamp(1rem, 4vw, 1.25rem);
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                  ">${isLeft ? '✕' : '❤'}</div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="
+                      font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+                      font-weight: 600;
+                      color: #636e72;
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
+                      margin-bottom: 2px;
+                    ">Tu elección</div>
+                    <div style="
+                      font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+                      font-weight: 700;
+                      color: #2d3436;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    ">${label}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      root.innerHTML = `
+        <div style="
+          position: fixed;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          overflow: hidden;
+        ">
+          
+          <header style="
+            padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2rem) clamp(1rem, 3vw, 1.5rem);
+            text-align: center;
+            background: white;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            flex-shrink: 0;
+            z-index: 10;
+          ">
+            <h2 style="
+              margin: 0 0 clamp(0.5rem, 2vw, 0.75rem) 0;
+              color: #2d3436;
+              font-size: clamp(1.75rem, 6vw, 2.5rem);
+              font-weight: 900;
+              background: linear-gradient(135deg, #667eea, #764ba2);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+            ">✨ Tus Decisiones</h2>
+            <p style="
+              margin: 0;
+              color: #636e72;
+              font-size: clamp(0.9rem, 3vw, 1.1rem);
+              font-weight: 500;
+            ">Completaste ${dilemmas.length} decisiones</p>
+          </header>
+
+          <div data-results-scroll style="
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+          ">
+            <div style="
+              padding: clamp(1rem, 4vw, 2rem);
+              max-width: 1400px;
+              margin: 0 auto;
+            ">
+              <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+                gap: clamp(1rem, 3vw, 1.5rem);
+                margin-bottom: clamp(1.5rem, 4vw, 2rem);
+              ">
+                ${resultsHTML}
+              </div>
+            </div>
+          </div>
+
+          <footer style="
+            padding: clamp(1rem, 4vw, 1.5rem);
+            text-align: center;
+            background: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            flex-shrink: 0;
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
+          ">
+            <button data-btn-reset style="
+              padding: clamp(0.875rem, 3vw, 1.25rem) clamp(2rem, 6vw, 3.5rem);
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white;
+              border: none;
+              border-radius: 50px;
+              font-size: clamp(0.9rem, 3.5vw, 1.125rem);
+              font-weight: 700;
+              cursor: pointer;
+              box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+              transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+              display: inline-flex;
+              align-items: center;
+              gap: clamp(0.5rem, 2vw, 0.75rem);
+            " onmouseenter="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 40px rgba(102,126,234,0.4)'" onmouseleave="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(102,126,234,0.3)'">
+              <span style="font-size: clamp(1.2rem, 4vw, 1.5rem);">🔄</span>
+              <span>Jugar de Nuevo</span>
+            </button>
+          </footer>
+        </div>
+      `;
+
+      const resetBtn = document.querySelector('[data-btn-reset]');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          state = {
+            currentIndex: 0,
+            choices: {},
+            isAnimating: false,
+            showResults: false,
+            isDragging: false,
+            startX: 0,
+            startY: 0,
+            currentX: 0,
+            currentY: 0
+          };
+          render();
+        });
+      }
+
+      // Smooth scroll to top al cargar resultados
+      const scrollContainer = document.querySelector('[data-results-scroll]');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = 0;
+      }
+    };
+
+    const renderError = () => {
+      const root = document.querySelector('[data-tinder-root]');
+      if (!root) return;
+
+      root.innerHTML = `
         <div style="
           display: flex;
-          justify-content: center;
           align-items: center;
-          height: 100vh;
+          justify-content: center;
+          min-height: 100vh;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          text-align: center;
           padding: 2rem;
+          text-align: center;
         ">
           <div>
-            <h1 style="margin-bottom: 1rem;">No Game Data</h1>
-            <p>Unable to load dilemmas. Please check the data file.</p>
+            <div style="
+              font-size: clamp(3rem, 10vw, 5rem);
+              margin-bottom: 1rem;
+            ">⚠️</div>
+            <h1 style="
+              color: white;
+              font-size: clamp(1.5rem, 5vw, 2.5rem);
+              margin: 0 0 1rem 0;
+              font-weight: 900;
+            ">Error al Cargar</h1>
+            <p style="
+              color: rgba(255, 255, 255, 0.9);
+              font-size: clamp(1rem, 3vw, 1.25rem);
+              margin: 0 0 2rem 0;
+              max-width: 400px;
+            ">No se pudieron cargar los datos del juego. Por favor, intenta nuevamente.</p>
             <button onclick="window.location.reload()" style="
-              margin-top: 1rem;
-              padding: 0.75rem 1.5rem;
+              padding: 1rem 2.5rem;
               background: white;
               color: #667eea;
               border: none;
-              border-radius: 8px;
-              font-weight: bold;
+              border-radius: 50px;
+              font-weight: 700;
+              font-size: 1rem;
               cursor: pointer;
-            ">
-              Try Again
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+              transition: all 0.3s ease;
+            " onmouseenter="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.3)'" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.2)'">
+              🔄 Recargar Página
             </button>
           </div>
         </div>
       `;
-      return;
-    }
-    
-    appContainer.innerHTML = '';
-    
-    const container = document.createElement('div');
-    container.className = 'tinder-container';
-    
-    // Header
-    container.innerHTML = `
-      <div class="tinder-header">
-        <h1>Decision Tinder</h1>
-        <div class="progress-container">
-          <div class="progress-bar" style="width: ${getProgressPercentage()}%"></div>
-          <span class="progress-text">
-            ${currentIndex + 1} / ${totalDilemmas}
-          </span>
-        </div>
-      </div>
-      
-      <div class="cards-container"></div>
-      
-      <div class="action-buttons">
-        <button class="action-button reject-button" ${isAnimating ? 'disabled' : ''}>
-          <span class="button-icon">👈</span>
-          <span class="button-text">Choose Left</span>
-        </button>
-        <button class="action-button accept-button" ${isAnimating ? 'disabled' : ''}>
-          <span class="button-text">Choose Right</span>
-          <span class="button-icon">👉</span>
-        </button>
-      </div>
-      
-      <button class="skip-button" ${isAnimating ? 'disabled' : ''}>
-        Skip (Random Choice)
-      </button>
-    `;
-    
-    // Cards
-    const cardsContainer = container.querySelector('.cards-container');
-    if (cardsContainer) {
-      const visibleCards = dilemmas.slice(currentIndex, Math.min(currentIndex + 3, totalDilemmas));
-      
-      visibleCards.forEach((dilemma, index) => {
-        const card = createCardElement(dilemma, index);
-        cardsContainer.appendChild(card);
-      });
-    }
-    
-    appContainer.appendChild(container);
-    bindEvents();
-  }
-  
-  function renderResults() {
-    appContainer = document.getElementById('tinder-app');
-    if (!appContainer) return;
-    
-    appContainer.innerHTML = '';
-    const results = createResultsElement();
-    appContainer.appendChild(results);
-  }
-  
-  function bindEvents() {
-    // Botón izquierdo
-    const rejectBtn = document.querySelector('.reject-button');
-    if (rejectBtn) {
-      rejectBtn.addEventListener('click', () => handleSwipe('left'));
-    }
-    
-    // Botón derecho
-    const acceptBtn = document.querySelector('.accept-button');
-    if (acceptBtn) {
-      acceptBtn.addEventListener('click', () => handleSwipe('right'));
-    }
-    
-    // Botón skip
-    const skipBtn = document.querySelector('.skip-button');
-    if (skipBtn) {
-      skipBtn.addEventListener('click', () => {
-        const randomDirection = Math.random() > 0.5 ? 'left' : 'right';
-        handleSwipe(randomDirection);
-      });
-    }
-    
-    // Swipe táctil para móviles
-    setupTouchEvents();
-  }
-  
-  function setupTouchEvents() {
-    let startX = 0;
-    let startY = 0;
-    let isSwiping = false;
-    
-    const card = document.querySelector('.card.current');
-    if (!card) return;
-    
-    card.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      isSwiping = true;
-    });
-    
-    card.addEventListener('touchmove', (e) => {
-      if (!isSwiping) return;
-      e.preventDefault();
-    });
-    
-    card.addEventListener('touchend', (e) => {
-      if (!isSwiping) return;
-      
-      const endX = e.changedTouches[0].clientX;
-      const endY = e.changedTouches[0].clientY;
-      
-      const diffX = endX - startX;
-      const diffY = endY - startY;
-      
-      // Si el movimiento horizontal es significativo y vertical no lo es
-      if (Math.abs(diffX) > 50 && Math.abs(diffY) < 100) {
-        const direction = diffX < 0 ? 'left' : 'right';
-        handleSwipe(direction);
-      }
-      
-      isSwiping = false;
-    });
-    
-    // También soporte para mouse en desktop
-    let mouseStartX = 0;
-    let mouseIsDown = false;
-    
-    card.addEventListener('mousedown', (e) => {
-      mouseStartX = e.clientX;
-      mouseIsDown = true;
-    });
-    
-    document.addEventListener('mousemove', (e) => {
-      if (!mouseIsDown) return;
-      
-      const mouseEndX = e.clientX;
-      const diffX = mouseEndX - mouseStartX;
-      
-      // Dar feedback visual mientras se arrastra
-      if (Math.abs(diffX) > 30) {
-        const rotate = diffX * 0.1;
-        card.style.transform = `translateY(0px) scale(1) rotate(${rotate}deg)`;
-      }
-    });
-    
-    document.addEventListener('mouseup', (e) => {
-      if (!mouseIsDown) return;
-      
-      const mouseEndX = e.clientX;
-      const diffX = mouseEndX - mouseStartX;
-      
-      if (Math.abs(diffX) > 100) {
-        const direction = diffX < 0 ? 'left' : 'right';
-        handleSwipe(direction);
-      } else {
-        // Resetear la transformación si no se hizo swipe
-        card.style.transform = 'translateY(0px) scale(1) rotate(0deg)';
-      }
-      
-      mouseIsDown = false;
-    });
-  }
-  
-  // Inicializar cuando el DOM esté listo
-  function init() {
-    if (dilemmas.length > 0) {
-      render();
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
     } else {
-      console.error('No dilemmas data available');
-      const appContainer = document.getElementById('tinder-app');
-      if (appContainer) {
-        appContainer.innerHTML = `
-          <div style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-align: center;
-            padding: 2rem;
-          ">
-            <div>
-              <h1 style="margin-bottom: 1rem;">⚠️ Game Data Error</h1>
-              <p>Using demo data instead...</p>
-              <div style="margin-top: 2rem; width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            </div>
-          </div>
-        `;
-        // Recargar después de 2 segundos
-        setTimeout(() => {
-          render();
-        }, 2000);
-      }
+      init();
     }
-  }
-  
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    // DOM already loaded
-    init();
-  }
+  })();
 </script>
 
 <style>
-  /* Animación de carga */
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  
-  /* Estilos optimizados para el componente Tinder */
-  :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --reject-gradient: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
-    --accept-gradient: linear-gradient(135deg, #4ecdc4 0%, #00b894 100%);
-    --progress-gradient: linear-gradient(90deg, #00ff88 0%, #00ccff 100%);
-    --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.2);
-    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  #tinder-app {
-    width: 100%;
-    height: 100vh;
+  [data-tinder-root] {
+    position: fixed;
+    inset: 0;
     overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   }
 
-  .tinder-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    background: var(--primary-gradient);
-    position: relative;
+  * {
+    -webkit-tap-highlight-color: transparent;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
 
-  .tinder-header {
-    padding: 1.5rem;
-    text-align: center;
-    color: white;
-    position: relative;
-    z-index: 100;
-    flex-shrink: 0;
+  button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    font-family: inherit;
   }
 
-  .tinder-header h1 {
-    margin: 0 0 1rem;
-    font-size: 2rem;
-    font-weight: bold;
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
   }
 
-  .progress-container {
-    width: 100%;
-    max-width: 300px;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.2);
-    height: 6px;
-    border-radius: 3px;
-    position: relative;
-    overflow: hidden;
+  /* Scrollbar personalizado */
+  [data-results-scroll]::-webkit-scrollbar {
+    width: 8px;
   }
 
-  .progress-bar {
-    height: 100%;
-    background: var(--progress-gradient);
-    border-radius: 3px;
-    transition: width 0.3s ease;
+  [data-results-scroll]::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
   }
 
-  .progress-text {
-    position: absolute;
-    top: -25px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.875rem;
+  [data-results-scroll]::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 10px;
   }
 
-  .cards-container {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    padding: 1rem;
-    min-height: 0;
+  [data-results-scroll]::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2, #667eea);
   }
 
-  .card {
-    position: absolute;
-    width: calc(100% - 2rem);
-    max-width: 400px;
-    height: min(500px, 70vh);
-    background: white;
-    border-radius: 24px;
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    cursor: grab;
-    user-select: none;
-    touch-action: pan-y;
+  /* Smooth scroll para Firefox */
+  [data-results-scroll] {
+    scrollbar-width: thin;
+    scrollbar-color: #667eea rgba(0, 0, 0, 0.05);
   }
 
-  .card:active {
-    cursor: grabbing;
+  /* Optimización de performance */
+  [data-card-active] {
+    will-change: transform, opacity;
   }
 
-  .swipe-left {
-    transform: translateX(-150%) rotate(-30deg) !important;
-    opacity: 0 !important;
+  [data-result-item] {
+    will-change: transform;
   }
 
-  .swipe-right {
-    transform: translateX(150%) rotate(30deg) !important;
-    opacity: 0 !important;
-  }
-
-  .card-image-container {
-    width: 100%;
-    height: 60%;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-  }
-
-  .card:hover .card-image {
-    transform: scale(1.05);
-  }
-
-  .image-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 40%;
-    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-  }
-
-  .card-content {
-    padding: 1.5rem;
-    height: 40%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .card-title {
-    margin: 0 0 0.5rem;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-  }
-
-  .card-comment {
-    margin: 0 0 1rem;
-    color: #666;
-    font-size: 1rem;
-    line-height: 1.4;
-  }
-
-  .options-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    margin-top: auto;
-  }
-
-  .option-left, .option-right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0.75rem;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-  }
-
-  .option-left {
-    background: var(--reject-gradient);
-    color: white;
-  }
-
-  .option-right {
-    background: var(--accept-gradient);
-    color: white;
-  }
-
-  .option-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .option-label {
-    font-weight: 600;
-    font-size: 0.875rem;
-    text-align: center;
-  }
-
-  .vs {
-    font-weight: bold;
-    color: #888;
-    padding: 0 0.5rem;
-    font-size: 0.75rem;
-  }
-
-  .swipe-instructions {
-    position: absolute;
-    bottom: 1rem;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 1rem;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.875rem;
-  }
-
-  .swipe-left-instruction, .swipe-right-instruction {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-  }
-
-  .swipe-arrow {
-    font-size: 1.25rem;
-    font-weight: bold;
-  }
-
-  .action-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    padding: 1rem;
-    position: relative;
-    z-index: 100;
-    flex-shrink: 0;
-  }
-
-  .action-button {
-    padding: 0.875rem 1.5rem;
-    border: none;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    min-width: 140px;
-    justify-content: center;
-  }
-
-  .action-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .action-button:not(:disabled):hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-  }
-
-  .action-button:not(:disabled):active {
-    transform: translateY(-1px);
-  }
-
-  .reject-button {
-    background: var(--reject-gradient);
-    color: white;
-  }
-
-  .accept-button {
-    background: var(--accept-gradient);
-    color: white;
-  }
-
-  .button-icon {
-    font-size: 1.25rem;
-  }
-
-  .button-text {
-    font-size: 0.875rem;
-  }
-
-  .skip-button {
-    margin: 0 auto 1rem;
-    padding: 0.75rem 1.5rem;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    border-radius: 25px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    backdrop-filter: blur(10px);
-    flex-shrink: 0;
-  }
-
-  .skip-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .skip-button:not(:disabled):hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.6);
-  }
-
-  /* Results Styles */
-  .results-container {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    padding: 1rem;
-    text-align: center;
-    background: var(--primary-gradient);
-  }
-
-  .results-container h2 {
-    color: white;
-    margin: 0 0 1.5rem;
-    font-size: 2rem;
-    padding-top: 1rem;
-  }
-
-  .results-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding: 0 0.5rem;
-  }
-
-  .result-card {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: var(--shadow-md);
-    transition: transform 0.3s ease;
-  }
-
-  .result-card:hover {
-    transform: translateY(-5px);
-  }
-
-  .result-image {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-  }
-
-  .result-content {
-    padding: 1rem;
-  }
-
-  .result-content h3 {
-    margin: 0 0 0.5rem;
-    color: #333;
-    font-size: 1.25rem;
-  }
-
-  .result-content p {
-    margin: 0 0 1rem;
-    color: #666;
-    font-size: 0.875rem;
-    line-height: 1.4;
-  }
-
-  .result-choice {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-  }
-
-  .choice-label {
-    font-weight: 600;
-    color: #333;
-    font-size: 0.875rem;
-  }
-
-  .choice-value {
-    color: #667eea;
-    font-weight: bold;
-    font-size: 0.875rem;
-  }
-
-  .reset-button {
-    padding: 1rem 2.5rem;
-    background: var(--primary-gradient);
-    color: white;
-    border: none;
-    border-radius: 25px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    margin-bottom: 2rem;
-  }
-
-  .reset-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-  }
-
-  /* Animations */
-  @keyframes fadeIn {
-    from { 
-      opacity: 0; 
-      transform: translateY(20px); 
-    }
-    to { 
-      opacity: 1; 
-      transform: translateY(0); 
-    }
-  }
-
-  .card {
-    animation: fadeIn 0.5s ease-out;
-  }
-
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .tinder-header h1 {
-      font-size: 1.5rem;
-    }
-
-    .card {
-      height: min(450px, 65vh);
-      width: calc(100% - 1rem);
-    }
-
-    .card-content {
-      padding: 1rem;
-    }
-
-    .card-title {
-      font-size: 1.25rem;
-    }
-
-    .card-comment {
-      font-size: 0.875rem;
-    }
-
-    .action-button {
-      padding: 0.75rem 1rem;
-      min-width: 120px;
-      font-size: 0.875rem;
-    }
-
-    .button-icon {
-      font-size: 1rem;
-    }
-
-    .button-text {
-      font-size: 0.75rem;
-    }
-
-    .skip-button {
-      padding: 0.625rem 1.25rem;
-      font-size: 0.875rem;
-    }
-
-    .results-container h2 {
-      font-size: 1.5rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .tinder-header {
-      padding: 1rem;
-    }
-
-    .tinder-header h1 {
-      font-size: 1.25rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .card {
-      height: min(400px, 60vh);
-      border-radius: 20px;
-    }
-
-    .card-title {
-      font-size: 1.125rem;
-    }
-
-    .options-container {
-      gap: 0.5rem;
-    }
-
-    .option-left, .option-right {
-      padding: 0.5rem;
-    }
-
-    .option-icon {
-      font-size: 1.25rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .option-label {
-      font-size: 0.75rem;
-    }
-
-    .vs {
-      font-size: 0.625rem;
-    }
-
-    .action-buttons {
-      gap: 0.5rem;
-      padding: 0.75rem;
-    }
-
-    .action-button {
-      min-width: 110px;
-      padding: 0.625rem 0.875rem;
-    }
-
-    .button-text {
-      display: none;
-    }
-
-    .button-icon {
-      font-size: 1.5rem;
-    }
-
-    .swipe-instructions {
-      display: none;
-    }
-
-    .results-grid {
+  /* Media queries para mejorar responsive */
+  @media (max-width: 640px) {
+    [data-results-scroll] > div > div {
       grid-template-columns: 1fr;
-      gap: 0.75rem;
     }
+  }
 
-    .result-image {
-      height: 120px;
+  @media (min-width: 641px) and (max-width: 1024px) {
+    [data-results-scroll] > div > div {
+      grid-template-columns: repeat(2, 1fr);
     }
+  }
 
-    .reset-button {
-      padding: 0.875rem 2rem;
-      font-size: 0.875rem;
+  @media (min-width: 1025px) {
+    [data-results-scroll] > div > div {
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+  }
+
+  /* Reducir animaciones en dispositivos que lo prefieran */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
     }
   }
 </style>
@@ -5964,6 +5861,207 @@ ARCHIVO: src/data/dilemmas.json
 
 {
   "version": "1.0",
+  "title": "Selección Argentina: ¿Lírico o Batallador?",
+  "description": "Swipe left or right basándote en tu visión del fútbol. Al final, revelaremos tu sesgo político y de qué partido probablemente sos.",
+  "scenes": [
+    {
+      "scene_id": "1",
+      "image_url": "https://images.unsplash.com/photo-1626248801379-51ee15d8f5e9?w=800&h=600&fit=crop",
+      "title": "Estilo de juego",
+      "comment": "¿Qué prefieres para la Selección?",
+      "options": [
+        {
+          "label": "Fútbol lindo y posesión 🎨",
+          "ref_valor": "estetico"
+        },
+        {
+          "label": "Resultado y garra, como sea ⚔️",
+          "ref_valor": "batallador"
+        }
+      ]
+    },
+    {
+      "scene_id": "2",
+      "image_url": "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=800&h=600&fit=crop",
+      "title": "Figura excluyente",
+      "comment": "En un equipo ideal, ¿qué tipo de figura es indispensable?",
+      "options": [
+        {
+          "label": "Un 10 creativo (como Riquelme) 🧠",
+          "ref_valor": "enganche"
+        },
+        {
+          "label": "Un 5 o un 9 de área (como Mascherano o Batistuta) 💥",
+          "ref_valor": "guerrero"
+        }
+      ]
+    },
+    {
+      "scene_id": "3",
+      "image_url": "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=600&fit=crop",
+      "title": "DT ideal post-Scaloni",
+      "comment": "¿Qué perfil de técnico te gustaría?",
+      "options": [
+        {
+          "label": "Un ideólogo con proyecto a largo plazo 📈",
+          "ref_valor": "proyecto"
+        },
+        {
+          "label": "Un práctico, que gane ahora mismo 🏆",
+          "ref_valor": "resultado"
+        }
+      ]
+    },
+    {
+      "scene_id": "4",
+      "image_url": "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=800&h=600&fit=crop",
+      "title": "El próximo capitán",
+      "comment": "Tras la retirada de Messi, ¿qué característica debe primar?",
+      "options": [
+        {
+          "label": "Serenidad y ejemplo dentro de la cancha 🤝",
+          "ref_valor": "lider_silencioso"
+        },
+        {
+          "label": "Pasión y conexión con la hinchada 🔥",
+          "ref_valor": "lider_pasion"
+        }
+      ]
+    },
+    {
+      "scene_id": "5",
+      "image_url": "https://images.unsplash.com/photo-1626248801379-51ee15d8f5e9?w=800&h=600&fit=crop",
+      "title": "La Convocatoria Polémica",
+      "comment": "Hay un jugador en un equipo chico que juega bien, pero otro en Europa tiene más nombre. ¿A quién llamás?",
+      "options": [
+        {
+          "label": "Al del equipo chico. Se basa en el presente. ⚖️",
+          "ref_valor": "merito"
+        },
+        {
+          "label": "Al de Europa. La experiencia en alta competencia pesa. 🌍",
+          "ref_valor": "nombre"
+        }
+      ]
+    },
+    {
+      "scene_id": "6",
+      "image_url": "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=600&fit=crop",
+      "title": "El Clásico Rival",
+      "comment": "¿Cómo debe enfrentarse a Brasil?",
+      "options": [
+        {
+          "label": "Con coraje, sin complejos. Ir a ganar siempre. 🦁",
+          "ref_valor": "sin_complejos"
+        },
+        {
+          "label": "Con inteligencia táctica, buscando sus puntos débiles. 🕵️",
+          "ref_valor": "tactica"
+        }
+      ]
+    },
+    {
+      "scene_id": "7",
+      "image_url": "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=800&h=600&fit=crop",
+      "title": "La era Messi",
+      "comment": "¿Cómo definirías su legado en la Albiceleste?",
+      "options": [
+        {
+          "label": "El genio que coronó un proyecto colectivo. 👨‍👩‍👧‍👦",
+          "ref_valor": "colectivo"
+        },
+        {
+          "label": "El salvador que nos dio lo que tanto necesitábamos. 🦸",
+          "ref_valor": "heroe"
+        }
+      ]
+    },
+    {
+      "scene_id": "8",
+      "image_url": "https://images.unsplash.com/photo-1626248801379-51ee15d8f5e9?w=800&h=600&fit=crop",
+      "title": "La Polémica: jugar en Argentina",
+      "comment": "Un joven crack argentino elige quedarse en River/Boca en vez de irse a Europa. ¿Tu opinión?",
+      "options": [
+        {
+          "label": "Es un error. Debe ir a competir al más alto nivel. ✈️",
+          "ref_valor": "europa"
+        },
+        {
+          "label": "Hay que valorarlo. Fortalece el fútbol local. 🏠",
+          "ref_valor": "local"
+        }
+      ]
+    },
+    {
+      "scene_id": "9",
+      "image_url": "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=600&fit=crop",
+      "title": "La Hinchada",
+      "comment": "El rol de la hinchada en la cancha debe ser...",
+      "options": [
+        {
+          "label": "Apoyo incondicional, sea cual sea el rendimiento. 💙🤍",
+          "ref_valor": "incondicional"
+        },
+        {
+          "label": "Exigente. La camiseta no se mancha. 🏴‍☠️",
+          "ref_valor": "exigente"
+        }
+      ]
+    },
+    {
+      "scene_id": "10",
+      "image_url": "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=800&h=600&fit=crop",
+      "title": "El futuro",
+      "comment": "¿Cuál es el mayor desafío para la Selección?",
+      "options": [
+        {
+          "label": "Renovarse sin traumas, manteniendo una idea. 🔄",
+          "ref_valor": "continuidad"
+        },
+        {
+          "label": "Encontrar nuevas figuras que tengan hambre de gloria. 🐺",
+          "ref_valor": "hambre"
+        }
+      ]
+    }
+  ],
+  "resultados": {
+    "interpretacion": "Sumá 1 punto por cada respuesta de la columna A y 1 punto por cada respuesta de la columna B. Luego identificá tu perfil según dónde tengas más puntos.",
+    "columnas": {
+      "columna_a": ["estetico", "enganche", "proyecto", "lider_silencioso", "merito", "tactica", "colectivo", "local", "incondicional", "continuidad"],
+      "columna_b": ["batallador", "guerrero", "resultado", "lider_pasion", "nombre", "sin_complejos", "heroe", "europa", "exigente", "hambre"]
+    },
+    "perfiles": [
+      {
+        "nombre": "🔵 Peronista K / Kirchnerista",
+        "condicion": "Mayoría de respuestas en Columna B",
+        "descripcion": "Valorás la garra, el resultado y las figuras heroicas. Creés en la pasión popular y en dar batalla sin complejos. Sos pragmático, te importa más el triunfo que la estética. Tu fútbol es una metáfora de la lucha."
+      },
+      {
+        "nombre": "🟡 Peronista no K / Radical",
+        "condicion": "Mayoría de respuestas en Columna A, especialmente en 'proyecto', 'continuidad' y 'colectivo'",
+        "descripcion": "Creés en los proyectos a largo plazo, en la serenidad y en el mérito. Preferís un fútbol ordenado y con idea. Sos más institucionalista que pasional."
+      },
+      {
+        "nombre": "⚪ Liberal / Libertario",
+        "condicion": "Mayoría de respuestas en Columna B, pero especialmente en 'europa', 'nombre' (mérito individual) y 'exigente'",
+        "descripcion": "Valorás el mérito individual, la competencia en el más alto nivel y la exigencia. Descreés de lo 'local' por sobre lo competitivo. Tu visión es meritocrática y global."
+      },
+      {
+        "nombre": "🔴 Socialdemócrata / Progresista",
+        "condicion": "Mezcla equilibrada, con preferencia por 'estetico', 'proyecto', 'colectivo' y 'local'",
+        "descripcion": "Buscás un equilibrio entre el fútbol lindo y el proyecto colectivo. Valorás lo local y el desarrollo, pero con una visión estructurada y moderna."
+      }
+    ]
+  }
+}
+
+================================================================================
+ARCHIVO: src/data/dilemmas2.json
+================================================================================
+
+{
+  "version": "1.0",
   "title": "Decision Tinder",
   "description": "Swipe left or right based on your preferences",
   "scenes": [
@@ -6143,224 +6241,99 @@ ARCHIVO: src/layouts/Layout.astro
 ================================================================================
 
 ---
-import { SignedIn, SignedOut, UserButton, SignInButton, SignUpButton } from '@clerk/astro/components'
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/astro/components';
 
-const { title } = Astro.props
+interface Props {
+  title?: string;
+}
+
+const { title = 'Visual Dilemma' } = Astro.props;
 ---
 
-<!-- ---
-import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/astro/components'
-
-const { title } = Astro.props
----
-
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<header>
-      <h1>{title}</h1>
-      <nav>
-        <SignedOut>
-          <SignInButton mode="modal" />
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-      </nav>
-    </header>
-		<slot />
-	</body>
-</html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style> --><!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="description" content="Test your intuition and decision-making skills with engaging visual dilemma games" />
     <title>{title} | Visual Dilemma</title>
-    <style>
-      :root {
-        --primary-gradient: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
-        --primary-color: #3245ff;
-        --secondary-color: #bc52ee;
-        --text-dark: #111827;
-        --text-light: #6b7280;
-        --bg-light: #f8f9fa;
-        --border-color: #e5e7eb;
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        line-height: 1.6;
-        color: var(--text-dark);
-        background-color: white;
-      }
-    </style>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
   <body>
-    <header
-      style="
-			background: white;
-			box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-			position: sticky;
-			top: 0;
-			z-index: 1000;
-			padding: 1rem 2rem;
-		"
-    >
-      <div
-        style="
-				max-width: 1200px;
-				margin: 0 auto;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				gap: 2rem;
-			"
-      >
-        <div style="display: flex; align-items: center; gap: 2rem;">
-          <a
-            href="/"
-            style="
-						text-decoration: none;
-						font-size: 1.5rem;
-						font-weight: bold;
-						background: var(--primary-gradient);
-						-webkit-background-clip: text;
-						-webkit-text-fill-color: transparent;
-						background-clip: text;
-					"
-          >
-            Visual Dilemma
+    <header data-header>
+      <div data-header-container>
+        <div data-header-left>
+          <a href="/" data-logo>
+            <span data-logo-icon>◆</span>
+            <span data-logo-text>Visual Dilemma</span>
           </a>
-          <nav style="display: flex; gap: 1.5rem; align-items: center;">
-            <a
-              href="/"
-              style="
-							text-decoration: none;
-							color: var(--text-light);
-							font-weight: 500;
-							transition: color 0.2s;
-						"
-              onmouseover="this.style.color='var(--primary-color)'"
-              onmouseout="this.style.color='var(--text-light)'"
-            >
-              Home
+          <nav data-nav>
+            <a href="/" data-nav-link data-active>
+              <svg data-nav-icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              <span>Home</span>
             </a>
             <SignedIn>
-              <a
-                href="/games"
-                style="
-								text-decoration: none;
-								color: var(--text-light);
-								font-weight: 500;
-								transition: color 0.2s;
-							"
-                onmouseover="this.style.color='var(--primary-color)'"
-                onmouseout="this.style.color='var(--text-light)'"
-              >
-                Games
+              <a href="/games" data-nav-link>
+                <svg data-nav-icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                <span>Games</span>
               </a>
-              <a
-                href="/dashboard"
-                style="
-								text-decoration: none;
-								color: var(--text-light);
-								font-weight: 500;
-								transition: color 0.2s;
-							"
-                onmouseover="this.style.color='var(--primary-color)'"
-                onmouseout="this.style.color='var(--text-light)'"
-              >
-                Dashboard
+              <a href="/dashboard" data-nav-link>
+                <svg data-nav-icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="9"/>
+                  <rect x="14" y="3" width="7" height="5"/>
+                  <rect x="14" y="12" width="7" height="9"/>
+                  <rect x="3" y="16" width="7" height="5"/>
+                </svg>
+                <span>Dashboard</span>
               </a>
-              <a
-                href="/tinder"
-                style="
-  					text-decoration: none;
-  					color: var(--text-light);
-  					font-weight: 500;
-  					transition: color 0.2s;
-				"
-                onmouseover="this.style.color='var(--primary-color)'"
-                onmouseout="this.style.color='var(--text-light)'"
-              >
-                Decision Tinder
+              <a href="/tinder" data-nav-link>
+                <svg data-nav-icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+                  <path d="M18.8 16.9a7.5 7.5 0 0 0 .2-1.9A7.5 7.5 0 0 0 5.2 7"/>
+                  <path d="M20.7 4.7 4.7 20.7"/>
+                </svg>
+                <span>Decision Tinder</span>
               </a>
             </SignedIn>
-            <a
-              href="/about"
-              style="
-							text-decoration: none;
-							color: var(--text-light);
-							font-weight: 500;
-							transition: color 0.2s;
-						"
-              onmouseover="this.style.color='var(--primary-color)'"
-              onmouseout="this.style.color='var(--text-light)'"
-            >
-              About
+            <a href="/about" data-nav-link>
+              <svg data-nav-icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
+              <span>About</span>
             </a>
           </nav>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 1rem;">
+        <div data-header-right>
           <SignedOut>
             <SignInButton mode="modal">
-              <button
-                style="
-								padding: 0.5rem 1.5rem;
-								background: transparent;
-								color: var(--primary-color);
-								border: 2px solid var(--primary-color);
-								border-radius: 8px;
-								font-weight: 600;
-								cursor: pointer;
-								transition: all 0.2s;
-							"
-                onmouseover="this.style.backgroundColor='var(--primary-color)'; this.style.color='white'"
-                onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--primary-color)'"
-              >
+              <button data-btn-signin>
+                <svg data-btn-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
                 Sign In
               </button>
             </SignInButton>
             <SignUpButton mode="modal">
-              <button
-                style="
-								padding: 0.5rem 1.5rem;
-								background: var(--primary-gradient);
-								color: white;
-								border: none;
-								border-radius: 8px;
-								font-weight: 600;
-								cursor: pointer;
-								transition: transform 0.2s;
-							"
-                onmouseover="this.style.transform='translateY(-2px)'"
-                onmouseout="this.style.transform='none'"
-              >
+              <button data-btn-signup>
+                <svg data-btn-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="8.5" cy="7" r="4"/>
+                  <line x1="20" y1="8" x2="20" y2="14"/>
+                  <line x1="23" y1="11" x2="17" y2="11"/>
+                </svg>
                 Sign Up
               </button>
             </SignUpButton>
@@ -6370,92 +6343,969 @@ const { title } = Astro.props
               appearance={{
                 elements: {
                   avatarBox: {
-                    width: '40px',
-                    height: '40px',
-                    border: '2px solid var(--border-color)',
+                    width: '36px',
+                    height: '36px',
                   },
                 },
               }}
             />
           </SignedIn>
+          <button data-menu-btn aria-label="Toggle menu">
+            <span data-menu-line></span>
+            <span data-menu-line></span>
+          </button>
         </div>
       </div>
     </header>
 
-    <main style="min-height: calc(100vh - 200px);">
+    <main data-main>
       <slot />
     </main>
 
-    <footer
-      style="
-			background: var(--bg-light);
-			padding: 3rem 2rem 2rem;
-			margin-top: 4rem;
-			border-top: 1px solid var(--border-color);
-		"
-    >
-      <div style="max-width: 1200px; margin: 0 auto;">
-        <div
-          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;"
-        >
-          <div>
-            <h3 style="margin-bottom: 1rem; color: var(--text-dark);">Visual Dilemma</h3>
-            <p style="color: var(--text-light); line-height: 1.6;">
+    <footer data-footer>
+      <div data-footer-container>
+        <div data-footer-grid>
+          <div data-footer-section>
+            <div data-footer-logo>
+              <span data-logo-icon>◆</span>
+              <span data-logo-text>Visual Dilemma</span>
+            </div>
+            <p data-footer-desc>
               Test your intuition and decision-making skills with our engaging visual dilemma games.
             </p>
+            <div data-social-links>
+              <a href="#" data-social-link aria-label="Twitter">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+                </svg>
+              </a>
+              <a href="#" data-social-link aria-label="GitHub">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                </svg>
+              </a>
+              <a href="#" data-social-link aria-label="LinkedIn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/>
+                  <circle cx="4" cy="4" r="2"/>
+                </svg>
+              </a>
+            </div>
           </div>
-          <div>
-            <h4 style="margin-bottom: 1rem; color: var(--text-dark);">Quick Links</h4>
-            <ul style="list-style: none; padding: 0;">
-              <li>
-                <a href="/games" style="color: var(--text-light); text-decoration: none; line-height: 2;">Games</a>
-              </li>
-              <li>
-                <a href="/dashboard" style="color: var(--text-light); text-decoration: none; line-height: 2;"
-                  >Dashboard</a>
-              </li>
-              <li>
-                <a href="/about" style="color: var(--text-light); text-decoration: none; line-height: 2;">About</a>
-              </li>
-              <li>
-                <a href="/contact" style="color: var(--text-light); text-decoration: none; line-height: 2;">Contact</a>
-              </li>
+
+          <div data-footer-section>
+            <h4 data-footer-title>Quick Links</h4>
+            <ul data-footer-links>
+              <li><a href="/games">Games</a></li>
+              <li><a href="/dashboard">Dashboard</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/contact">Contact</a></li>
             </ul>
           </div>
-          <div>
-            <h4 style="margin-bottom: 1rem; color: var(--text-dark);">Legal</h4>
-            <ul style="list-style: none; padding: 0;">
-              <li>
-                <a href="/privacy" style="color: var(--text-light); text-decoration: none; line-height: 2;"
-                  >Privacy Policy</a>
-              </li>
-              <li>
-                <a href="/terms" style="color: var(--text-light); text-decoration: none; line-height: 2;"
-                  >Terms of Service</a>
-              </li>
-              <li>
-                <a href="/cookies" style="color: var(--text-light); text-decoration: none; line-height: 2;"
-                  >Cookie Policy</a>
-              </li>
+
+          <div data-footer-section>
+            <h4 data-footer-title>Resources</h4>
+            <ul data-footer-links>
+              <li><a href="/help">Help Center</a></li>
+              <li><a href="/blog">Blog</a></li>
+              <li><a href="/api">API</a></li>
+              <li><a href="/changelog">Changelog</a></li>
+            </ul>
+          </div>
+
+          <div data-footer-section>
+            <h4 data-footer-title>Legal</h4>
+            <ul data-footer-links>
+              <li><a href="/privacy">Privacy Policy</a></li>
+              <li><a href="/terms">Terms of Service</a></li>
+              <li><a href="/cookies">Cookie Policy</a></li>
             </ul>
           </div>
         </div>
-        <div
-          style="
-					border-top: 1px solid var(--border-color);
-					padding-top: 2rem;
-					text-align: center;
-					color: var(--text-light);
-					font-size: 0.875rem;
-				"
-        >
-          <p>© 2024 Visual Dilemma. All rights reserved.</p>
+
+        <div data-footer-bottom>
+          <p data-copyright>© 2024 Visual Dilemma. All rights reserved.</p>
+          <div data-footer-meta>
+            <span>Made with ♥ in Argentina</span>
+            <span data-separator>•</span>
+            <a href="/status">System Status</a>
+          </div>
         </div>
       </div>
     </footer>
+
+    <script>
+      (() => {
+        const $ = (selector:any) => document.querySelector(selector);
+        const $$ = (selector:any) => document.querySelectorAll(selector);
+
+        const header = $('[data-header]');
+        const menuBtn = $('[data-menu-btn]');
+        const nav = $('[data-nav]');
+        const navLinks = $$('[data-nav-link]');
+        const body = document.body;
+
+        const toggleMenu = () => {
+          const isActive = nav.hasAttribute('data-menu-active');
+          
+          if (isActive) {
+            nav.removeAttribute('data-menu-active');
+            menuBtn.removeAttribute('data-menu-active');
+            body.style.overflow = '';
+          } else {
+            nav.setAttribute('data-menu-active', '');
+            menuBtn.setAttribute('data-menu-active', '');
+            body.style.overflow = 'hidden';
+          }
+
+          if ('vibrate' in navigator) navigator.vibrate(10);
+        };
+
+        const closeMenu = () => {
+          nav.removeAttribute('data-menu-active');
+          menuBtn.removeAttribute('data-menu-active');
+          body.style.overflow = '';
+        };
+
+        const updateActiveLink = () => {
+          const currentPath = window.location.pathname;
+          navLinks.forEach((link) => {
+            link.removeAttribute('data-active');
+            if (link.getAttribute('href') === currentPath) {
+              link.setAttribute('data-active', '');
+            }
+          });
+        };
+
+        const handleScroll = (() => {
+          let lastScrollY = window.scrollY;
+          let ticking = false;
+
+          return () => {
+            if (!ticking) {
+              requestAnimationFrame(() => {
+                const currentScrollY = window.scrollY;
+
+                if (currentScrollY <= 0) {
+                  header.removeAttribute('data-scrolled');
+                  header.removeAttribute('data-hidden');
+                } else {
+                  if (currentScrollY > 100) {
+                    header.setAttribute('data-scrolled', '');
+                  } else {
+                    header.removeAttribute('data-scrolled');
+                  }
+
+                  if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                    header.setAttribute('data-hidden', '');
+                  } else {
+                    header.removeAttribute('data-hidden');
+                  }
+                }
+
+                lastScrollY = currentScrollY;
+                ticking = false;
+              });
+              ticking = true;
+            }
+          };
+        })();
+
+        const handleOutsideClick = (event:any) => {
+          if (window.innerWidth > 768) return;
+          
+          if (nav.hasAttribute('data-menu-active') &&
+              !nav.contains(event.target) &&
+              !menuBtn.contains(event.target)) {
+            closeMenu();
+          }
+        };
+
+        const handleKeydown = (event:any) => {
+          if (event.key === 'Escape' && nav.hasAttribute('data-menu-active')) {
+            closeMenu();
+          }
+        };
+
+        menuBtn?.addEventListener('click', toggleMenu);
+
+        navLinks.forEach((link) => {
+          link.addEventListener('click', () => {
+            updateActiveLink();
+            if (window.innerWidth <= 768) closeMenu();
+          });
+
+          link.addEventListener('touchstart', () => {
+            link.setAttribute('data-touched', '');
+          }, { passive: true });
+
+          link.addEventListener('touchend', () => {
+            setTimeout(() => link.removeAttribute('data-touched'), 150);
+          }, { passive: true });
+        });
+
+        document.addEventListener('click', handleOutsideClick);
+        document.addEventListener('keydown', handleKeydown);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        document.addEventListener('DOMContentLoaded', () => {
+          updateActiveLink();
+          setTimeout(() => header.setAttribute('data-loaded', ''), 100);
+        });
+
+        $$('[data-btn-signin], [data-btn-signup]').forEach((btn) => {
+          btn.addEventListener('mouseenter', () => {
+            if ('vibrate' in navigator) navigator.vibrate(5);
+          });
+        });
+      })();
+    </script>
+
+    <style is:global>
+      :root {
+        --primary: #007AFF;
+        --primary-light: #409CFF;
+        --primary-dark: #0051D5;
+        --secondary: #5856D6;
+        --success: #30D158;
+        --warning: #FF9500;
+        --danger: #FF3B30;
+        
+        --gray: #8E8E93;
+        --gray2: #636366;
+        --gray3: #48484A;
+        --gray4: #3A3A3C;
+        --gray5: #2C2C2E;
+        --gray6: #1C1C1E;
+        
+        --bg: #FFFFFF;
+        --bg-secondary: #F2F2F7;
+        --bg-tertiary: #E5E5EA;
+        --surface: rgba(255, 255, 255, 0.72);
+        --surface-solid: #FFFFFF;
+        --surface-hover: rgba(248, 248, 248, 0.8);
+        --text: #1D1D1F;
+        --text-secondary: #8E8E93;
+        --text-tertiary: #C7C7CC;
+        --border: rgba(0, 0, 0, 0.08);
+        --divider: rgba(0, 0, 0, 0.05);
+        
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+        --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.08);
+        --shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.12);
+        --shadow-2xl: 0 12px 24px rgba(0, 0, 0, 0.16);
+        
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-12: 3rem;
+        --space-16: 4rem;
+        
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 20px;
+        --radius-2xl: 24px;
+        --radius-full: 9999px;
+        
+        --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+        
+        --ease: cubic-bezier(0.2, 0, 0, 1);
+        --ease-in: cubic-bezier(0.4, 0, 1, 1);
+        --ease-out: cubic-bezier(0, 0, 0.2, 1);
+        
+        --header-height: 56px;
+        --max-width: 1200px;
+      }
+
+      @media (min-width: 768px) {
+        :root {
+          --header-height: 60px;
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --primary: #0A84FF;
+          --bg: #000000;
+          --bg-secondary: #1C1C1E;
+          --bg-tertiary: #2C2C2E;
+          --surface: rgba(28, 28, 30, 0.72);
+          --surface-solid: #1C1C1E;
+          --surface-hover: rgba(44, 44, 46, 0.8);
+          --text: #F5F5F7;
+          --text-secondary: #98989D;
+          --text-tertiary: #636366;
+          --border: rgba(255, 255, 255, 0.08);
+          --divider: rgba(255, 255, 255, 0.05);
+          --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+          --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.3);
+          --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.4);
+          --shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.5);
+          --shadow-2xl: 0 12px 24px rgba(0, 0, 0, 0.6);
+        }
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+
+      body {
+        font-family: var(--font-sans);
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--text);
+        background-color: var(--bg);
+        overflow-x: hidden;
+        transition: background-color 300ms var(--ease);
+      }
+
+      [data-header] {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--header-height);
+        background: var(--surface);
+        backdrop-filter: saturate(180%) blur(20px);
+        -webkit-backdrop-filter: saturate(180%) blur(20px);
+        border-bottom: 1px solid var(--border);
+        z-index: 1000;
+        transition: all 300ms var(--ease);
+        transform: translateY(0);
+      }
+
+      [data-header][data-scrolled] {
+        background: var(--surface-solid);
+        box-shadow: var(--shadow-md);
+        border-bottom-color: transparent;
+      }
+
+      [data-header][data-hidden] {
+        transform: translateY(-100%);
+      }
+
+      [data-header][data-loaded] {
+        animation: slideDown 500ms var(--ease);
+      }
+
+      [data-header-container] {
+        max-width: var(--max-width);
+        height: 100%;
+        margin: 0 auto;
+        padding: 0 var(--space-4);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-4);
+      }
+
+      [data-header-left] {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        flex: 1;
+      }
+
+      [data-logo] {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        text-decoration: none;
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text);
+        padding: var(--space-1) var(--space-2);
+        border-radius: var(--radius-md);
+        transition: all 150ms var(--ease);
+      }
+
+      [data-logo]:hover {
+        background: var(--surface-hover);
+        transform: translateY(-1px);
+      }
+
+      [data-logo-icon] {
+        font-size: 18px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 900;
+      }
+
+      [data-logo-text] {
+        font-weight: 700;
+      }
+
+      [data-nav] {
+        display: none;
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        right: 0;
+        background: var(--surface-solid);
+        border-top: 1px solid var(--border);
+        flex-direction: column;
+        padding: var(--space-4);
+        gap: var(--space-2);
+        box-shadow: var(--shadow-2xl);
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: all 300ms var(--ease);
+        z-index: 999;
+        max-height: calc(100vh - var(--header-height));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+
+      [data-nav][data-menu-active] {
+        display: flex;
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      @media (min-width: 768px) {
+        [data-nav] {
+          display: flex;
+          position: static;
+          flex-direction: row;
+          padding: var(--space-1);
+          gap: var(--space-1);
+          background: var(--surface-hover);
+          border-radius: var(--radius-xl);
+          border: 1px solid var(--border);
+          box-shadow: var(--shadow-sm);
+          transform: none;
+          opacity: 1;
+          max-height: none;
+          overflow: visible;
+        }
+      }
+
+      [data-nav-link] {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-4);
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-weight: 500;
+        font-size: 14px;
+        border-radius: var(--radius-md);
+        transition: all 300ms var(--ease);
+        white-space: nowrap;
+        background: var(--surface-hover);
+      }
+
+      @media (min-width: 768px) {
+        [data-nav-link] {
+          padding: var(--space-2) var(--space-4);
+          background: transparent;
+        }
+      }
+
+      [data-nav-icon] {
+        flex-shrink: 0;
+        transition: transform 300ms var(--ease);
+      }
+
+      [data-nav-link]:hover {
+        color: var(--text);
+        background: var(--surface-solid);
+        transform: translateY(-1px);
+      }
+
+      [data-nav-link]:hover [data-nav-icon] {
+        transform: scale(1.1);
+      }
+
+      [data-nav-link][data-active] {
+        color: var(--primary);
+        background: var(--surface-solid);
+        box-shadow: var(--shadow-sm);
+        font-weight: 600;
+      }
+
+      [data-nav-link][data-active]::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 4px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: var(--radius-full);
+        animation: pulse 2s infinite;
+      }
+
+      @media (max-width: 767px) {
+        [data-nav-link][data-active]::after {
+          display: none;
+        }
+      }
+
+      [data-nav-link][data-touched] {
+        transform: scale(0.98);
+      }
+
+      [data-header-right] {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      [data-btn-signin],
+      [data-btn-signup] {
+        display: none;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-4);
+        border: none;
+        border-radius: var(--radius-lg);
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 300ms var(--ease);
+        white-space: nowrap;
+      }
+
+      @media (min-width: 768px) {
+        [data-btn-signin],
+        [data-btn-signup] {
+          display: flex;
+        }
+      }
+
+      [data-btn-icon] {
+        flex-shrink: 0;
+        transition: transform 300ms var(--ease);
+      }
+
+      [data-btn-signin] {
+        background: transparent;
+        color: var(--primary);
+        border: 1px solid var(--border);
+      }
+
+      [data-btn-signin]:hover {
+        background: var(--surface-hover);
+        border-color: var(--primary);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      [data-btn-signin]:hover [data-btn-icon] {
+        transform: translateX(2px);
+      }
+
+      [data-btn-signup] {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        box-shadow: var(--shadow-lg);
+      }
+
+      [data-btn-signup]:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      [data-btn-signup]:hover [data-btn-icon] {
+        transform: scale(1.1);
+      }
+
+      [data-menu-btn] {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        background: var(--surface-solid);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        padding: 0;
+        z-index: 1001;
+        transition: all 300ms var(--ease);
+        position: relative;
+      }
+
+      @media (min-width: 768px) {
+        [data-menu-btn] {
+          display: none;
+        }
+      }
+
+      [data-menu-btn]:hover {
+        background: var(--surface-hover);
+        border-color: var(--primary);
+        transform: rotate(90deg);
+      }
+
+      [data-menu-line] {
+        width: 18px;
+        height: 2px;
+        background: var(--text);
+        border-radius: var(--radius-full);
+        transition: all 300ms var(--ease);
+        position: absolute;
+      }
+
+      [data-menu-line]:first-child {
+        transform: translateY(-4px);
+      }
+
+      [data-menu-line]:last-child {
+        transform: translateY(4px);
+      }
+
+      [data-menu-btn][data-menu-active] {
+        transform: rotate(180deg);
+        background: var(--primary);
+        border-color: var(--primary);
+      }
+
+      [data-menu-btn][data-menu-active] [data-menu-line] {
+        background: white;
+      }
+
+      [data-menu-btn][data-menu-active] [data-menu-line]:first-child {
+        transform: rotate(45deg);
+      }
+
+      [data-menu-btn][data-menu-active] [data-menu-line]:last-child {
+        transform: rotate(-45deg);
+      }
+
+      [data-main] {
+        min-height: 100vh;
+        padding-top: var(--header-height);
+        animation: fadeIn 600ms var(--ease);
+      }
+
+      [data-footer] {
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--divider);
+        padding: var(--space-12) var(--space-4) var(--space-8);
+        margin-top: auto;
+      }
+
+      @media (min-width: 768px) {
+        [data-footer] {
+          padding: var(--space-16) var(--space-6) var(--space-12);
+        }
+      }
+
+      [data-footer-container] {
+        max-width: var(--max-width);
+        margin: 0 auto;
+      }
+
+      [data-footer-grid] {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+        margin-bottom: var(--space-8);
+      }
+
+      @media (min-width: 640px) {
+        [data-footer-grid] {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (min-width: 1024px) {
+        [data-footer-grid] {
+          grid-template-columns: 2fr repeat(3, 1fr);
+          gap: var(--space-12);
+          margin-bottom: var(--space-12);
+        }
+      }
+
+      [data-footer-section] {
+        text-align: center;
+      }
+
+      @media (min-width: 1024px) {
+        [data-footer-section] {
+          text-align: left;
+        }
+        
+        [data-footer-section]:first-child {
+          padding-right: var(--space-8);
+        }
+      }
+
+      [data-footer-logo] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: var(--space-4);
+      }
+
+      @media (min-width: 1024px) {
+        [data-footer-logo] {
+          justify-content: flex-start;
+        }
+      }
+
+      [data-footer-desc] {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        font-size: 15px;
+        margin-bottom: var(--space-6);
+      }
+
+      [data-social-links] {
+        display: flex;
+        gap: var(--space-3);
+        justify-content: center;
+      }
+
+      @media (min-width: 1024px) {
+        [data-social-links] {
+          justify-content: flex-start;
+        }
+      }
+
+      [data-social-link] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+        transition: all 300ms var(--ease);
+      }
+
+      [data-social-link]:hover {
+        background: var(--surface-solid);
+        color: var(--primary);
+        border-color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      [data-footer-title] {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: var(--space-4);
+      }
+
+      [data-footer-links] {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+
+      [data-footer-links] a {
+        color: var(--text);
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 150ms var(--ease);
+        padding: var(--space-1) 0;
+        position: relative;
+        display: inline-block;
+      }
+
+      [data-footer-links] a::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--primary);
+        transition: width 300ms var(--ease);
+      }
+
+      [data-footer-links] a:hover {
+        color: var(--primary);
+      }
+
+      @media (min-width: 1024px) {
+        [data-footer-links] a:hover {
+          padding-left: var(--space-2);
+        }
+        
+        [data-footer-links] a:hover::before {
+          width: 12px;
+        }
+      }
+
+      [data-footer-bottom] {
+        padding-top: var(--space-8);
+        border-top: 1px solid var(--divider);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: var(--space-4);
+        text-align: center;
+      }
+
+      @media (min-width: 768px) {
+        [data-footer-bottom] {
+          flex-direction: row;
+          justify-content: space-between;
+          text-align: left;
+        }
+      }
+
+      [data-copyright] {
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 400;
+      }
+
+      [data-footer-meta] {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        color: var(--text-secondary);
+        font-size: 13px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      @media (min-width: 768px) {
+        [data-footer-meta] {
+          justify-content: flex-end;
+        }
+      }
+
+      [data-footer-meta] a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 150ms var(--ease);
+        font-weight: 500;
+      }
+
+      [data-footer-meta] a:hover {
+        color: var(--primary);
+      }
+
+      [data-separator] {
+        opacity: 0.3;
+        display: none;
+      }
+
+      @media (min-width: 640px) {
+        [data-separator] {
+          display: inline;
+        }
+      }
+
+      @keyframes slideDown {
+        from {
+          transform: translateY(-100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+          transform: translateX(-50%) scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: translateX(-50%) scale(0.8);
+        }
+      }
+
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+        border-radius: var(--radius-full);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--text-tertiary);
+        border-radius: var(--radius-full);
+        border: 2px solid var(--bg);
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--text-secondary);
+      }
+
+      ::-webkit-scrollbar-thumb:active {
+        background: var(--primary);
+      }
+
+      ::selection {
+        background: var(--primary);
+        color: white;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+        border-radius: var(--radius-sm);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
   </body>
 </html>
-
 
 ================================================================================
 ARCHIVO: src/lib/mongo.ts
@@ -7170,7 +8020,7 @@ import Layout from "../layouts/Layout.astro";
 ARCHIVO: src/pages/tinder.astro
 ================================================================================
 
----
+<!-- ---
 import Layout from '../layouts/Layout.astro';
 import TinderSwipe from '../components/TinderSwipe.astro';
 import { SignedIn, SignedOut } from '@clerk/astro/components';
@@ -7225,7 +8075,713 @@ import { SignedIn, SignedOut } from '@clerk/astro/components';
       <TinderSwipe />
     </main>
   </SignedIn>
+</Layout> -->
+
+
+
+---
+import Layout from '../layouts/Layout.astro';
+import TinderSwipe from '../components/TinderSwipe.astro';
+import { SignedIn, SignedOut, SignInButton, SignUpButton } from '@clerk/astro/components';
+---
+
+<Layout title="Decision Tinder">
+  <SignedOut>
+    <main class="tinder-signedout">
+      <div class="tinder-container">
+        <div class="tinder-header">
+          <div class="tinder-logo">
+            <span class="tinder-icon">⟡</span>
+            <h1 class="tinder-title">Decision Tinder</h1>
+          </div>
+          <p class="tinder-subtitle">
+            Swipe your way through visual dilemmas. Trust your gut, make quick decisions, and discover your preferences.
+          </p>
+        </div>
+
+        <div class="tinder-preview">
+          <div class="preview-header">
+            <div class="preview-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              Live Preview
+            </div>
+          </div>
+          
+          <div class="preview-content">
+            <div class="preview-card left-card">
+              <div class="card-illustration red-gradient">
+                <div class="swipe-indicator left-indicator">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+                  </svg>
+                </div>
+                <div class="card-label">Choice A</div>
+              </div>
+              <div class="card-info">
+                <h3>Mountain Sunrise</h3>
+                <p>Calm morning hike with breathtaking views</p>
+              </div>
+            </div>
+
+            <div class="preview-card right-card">
+              <div class="card-illustration blue-gradient">
+                <div class="swipe-indicator right-indicator">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                  </svg>
+                </div>
+                <div class="card-label">Choice B</div>
+              </div>
+              <div class="card-info">
+                <h3>Beach Sunset</h3>
+                <p>Relaxing evening by the ocean waves</p>
+              </div>
+            </div>
+
+            <div class="preview-instructions">
+              <div class="instruction">
+                <div class="instruction-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                  </svg>
+                </div>
+                <span>Choose between two visual options</span>
+              </div>
+              <div class="instruction">
+                <div class="instruction-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                </div>
+                <span>Swipe left or right to decide</span>
+              </div>
+              <div class="instruction">
+                <div class="instruction-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                </div>
+                <span>Track your preferences over time</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tinder-cta">
+          <div class="cta-content">
+            <h2 class="cta-title">Ready to start swiping?</h2>
+            <p class="cta-description">
+              Create a free account to save your progress, unlock all dilemmas, and join our community of decision-makers.
+            </p>
+            
+            <div class="cta-features">
+              <div class="feature">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>Unlimited dilemmas</span>
+              </div>
+              <div class="feature">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Personalized dashboard</span>
+              </div>
+              <div class="feature">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Compare with friends</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="cta-buttons">
+            <SignUpButton mode="modal">
+              <button class="btn-primary">
+                <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="8.5" cy="7" r="4"/>
+                  <line x1="20" y1="8" x2="20" y2="14"/>
+                  <line x1="23" y1="11" x2="17" y2="11"/>
+                </svg>
+                Get Started Free
+              </button>
+            </SignUpButton>
+            
+            <SignInButton mode="modal">
+              <button class="btn-secondary">
+                <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                  <polyline points="10 17 15 12 10 7"/>
+                  <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+                Sign In
+              </button>
+            </SignInButton>
+          </div>
+        </div>
+      </div>
+    </main>
+  </SignedOut>
+  
+  <SignedIn>
+    <main class="tinder-signedin">
+      <TinderSwipe />
+    </main>
+  </SignedIn>
 </Layout>
+
+<style>
+  /* ========================================
+     BASE STYLES
+     ======================================== */
+  .tinder-signedout {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, 
+      rgba(247, 248, 252, 0.9) 0%, 
+      rgba(242, 243, 248, 0.9) 100%);
+    animation: fadeIn 0.6s var(--transition-smooth);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .tinder-signedout {
+      background: linear-gradient(135deg, 
+        rgba(10, 10, 12, 0.9) 0%, 
+        rgba(20, 20, 24, 0.9) 100%);
+    }
+  }
+
+  .tinder-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3xl);
+  }
+
+  /* ========================================
+     HEADER SECTION
+     ======================================== */
+  .tinder-header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .tinder-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .tinder-icon {
+    font-size: 2.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .tinder-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .tinder-subtitle {
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* ========================================
+     PREVIEW SECTION
+     ======================================== */
+  .tinder-preview {
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    box-shadow: var(--shadow-floating);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .preview-header {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: var(--color-surface-hover);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .preview-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--color-primary);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .preview-badge svg {
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .preview-content {
+    padding: var(--spacing-3xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-3xl);
+  }
+
+  @media (min-width: 768px) {
+    .preview-content {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  .preview-card {
+    flex: 1;
+    min-width: 280px;
+    max-width: 320px;
+    background: var(--color-surface-solid);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    transition: all var(--transition-smooth);
+    position: relative;
+  }
+
+  .preview-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
+  }
+
+  .left-card:hover {
+    border-color: #ff4757;
+  }
+
+  .right-card:hover {
+    border-color: #00b894;
+  }
+
+  .card-illustration {
+    height: 200px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .red-gradient {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+  }
+
+  .blue-gradient {
+    background: linear-gradient(135deg, #4ecdc4 0%, #00b894 100%);
+  }
+
+  .swipe-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .left-indicator {
+    left: var(--spacing-lg);
+    color: #ff4757;
+  }
+
+  .right-indicator {
+    right: var(--spacing-lg);
+    color: #00b894;
+  }
+
+  .card-label {
+    position: absolute;
+    bottom: var(--spacing-md);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-lg);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+  }
+
+  .card-info {
+    padding: var(--spacing-xl);
+  }
+
+  .card-info h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text);
+  }
+
+  .card-info p {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .preview-instructions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    max-width: 400px;
+    margin-top: var(--spacing-xl);
+  }
+
+  @media (min-width: 768px) {
+    .preview-instructions {
+      position: absolute;
+      bottom: var(--spacing-3xl);
+      margin-top: 0;
+    }
+  }
+
+  .instruction {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  .instruction-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--color-surface-hover);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  .instruction span {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  /* ========================================
+     CTA SECTION
+     ======================================== */
+  .tinder-cta {
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--color-border);
+    padding: var(--spacing-3xl);
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .cta-content {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .cta-title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text);
+  }
+
+  .cta-description {
+    color: var(--color-text-secondary);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto var(--spacing-2xl);
+  }
+
+  .cta-features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+  }
+
+  .feature {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-surface-hover);
+    border-radius: var(--radius-lg);
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .feature svg {
+    color: var(--color-primary);
+  }
+
+  .cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 480px) {
+    .cta-buttons {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg) var(--spacing-2xl);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-smooth);
+    white-space: nowrap;
+    flex: 1;
+    min-width: 160px;
+  }
+
+  .btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .btn-primary:hover {
+    background: var(--gradient-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+  }
+
+  .btn-primary:hover .btn-icon {
+    transform: translateX(4px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-primary);
+    border: 1.5px solid var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-surface-hover);
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary:hover .btn-icon {
+    transform: translateX(2px);
+  }
+
+  .btn-icon {
+    transition: transform var(--transition-smooth);
+  }
+
+  /* ========================================
+     SIGNED IN STATE
+     ======================================== */
+  .tinder-signedin {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ========================================
+     RESPONSIVE DESIGN
+     ======================================== */
+  @media (max-width: 768px) {
+    .tinder-signedout {
+      padding: var(--spacing-lg);
+    }
+    
+    .tinder-container {
+      gap: var(--spacing-2xl);
+    }
+    
+    .preview-content {
+      padding: var(--spacing-xl);
+      gap: var(--spacing-xl);
+    }
+    
+    .preview-card {
+      min-width: 240px;
+    }
+    
+    .card-illustration {
+      height: 160px;
+    }
+    
+    .tinder-cta {
+      padding: var(--spacing-xl);
+    }
+    
+    .cta-features {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .preview-content {
+      flex-direction: column;
+    }
+    
+    .preview-card {
+      max-width: 100%;
+    }
+    
+    .swipe-indicator {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .swipe-indicator svg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+      padding: var(--spacing-md) var(--spacing-xl);
+      font-size: 0.9375rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .tinder-signedout {
+      padding: var(--spacing-md);
+    }
+    
+    .tinder-logo {
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+    
+    .preview-content {
+      padding: var(--spacing-lg);
+    }
+    
+    .card-info {
+      padding: var(--spacing-lg);
+    }
+    
+    .tinder-cta {
+      padding: var(--spacing-lg);
+    }
+    
+    .instruction {
+      font-size: 0.9375rem;
+    }
+  }
+
+  /* ========================================
+     ANIMATIONS
+     ======================================== */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* ========================================
+     PERFORMANCE OPTIMIZATIONS
+     ======================================== */
+  .tinder-preview,
+  .tinder-cta,
+  .preview-card,
+  .btn-primary,
+  .btn-secondary {
+    will-change: transform, box-shadow, background;
+  }
+</style>
 
 ================================================================================
 ARCHIVO: tsconfig.json
